@@ -1,0 +1,177 @@
+/* Scoped import for the specific component */
+@import url("https://fonts.googleapis.com/css2?family=Asap:wght@400;600;700&display=swap");
+
+.unique-payment-receipts-component {
+  --font-family: "Asap", sans-serif;
+  --color-primary: #08d9d6; /* Electric blue for primary accents */
+  --color-secondary: #ff2e63; /* Vibrant pink for secondary accents */
+  --color-background: #252a34; /* Dark slate for the background */
+  --color-foreground: #eaeaea; /* Soft white for foreground elements */
+  --border-radius: 15px; /* Smooth, modern rounded corners */
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  --hover-effect: scale(1.03); /* Subtle scale effect for interactivity */
+  --transition-duration: 0.5s; /* Smooth transition for interactive elements */
+  --background-animation: gradient 15s infinite linear; /* Infinite gradient animation */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #ff9a9e);
+  background-size: 400% 400%;
+  animation: var(--background-animation);
+  min-height: 100vh;
+}
+
+/* Back button container */
+.unique-payment-receipts-component .homeButton {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 20px; /* Add some bottom margin */
+}
+
+/* Back button */
+.unique-payment-receipts-component .billing-backButton {
+  background-color: #ff6b6b; /* Coral background color */
+  color: #fff; /* White text color */
+  padding: 3px 30px; /* Adjust padding as needed */
+  border-radius: 8px; /* Rounded corners */
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease-in-out; /* Smooth color transition */
+  font-family: "Montserrat", sans-serif; /* Use Montserrat font */
+}
+
+/* Back button text */
+.unique-payment-receipts-component .billing-backButton .backText {
+  margin-right: 8px; /* Add some space between text and icon */
+}
+
+/* Back button icon */
+.unique-payment-receipts-component .billing-backButton i {
+  font-size: 35px; /* Adjust icon size */
+}
+
+/* Hover effect */
+.unique-payment-receipts-component .billing-backButton:hover {
+  background-color: #e74c3c; /* Darker coral color on hover */
+}
+
+.unique-payment-receipts-component .admin-Payment-wrapper {
+  margin-top: 4%;
+  padding: 2rem;
+  max-width: 850px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+
+.unique-payment-receipts-component .admin-payment-receipt-container {
+  overflow: hidden;
+}
+
+/* Styling for the receipt title */
+.unique-payment-receipts-component .receipt-title {
+  background-color: rgb(0, 0, 0, 0.3);
+  color: #fff; /* White text color */
+  padding: 20px; /* Adjust padding as needed */
+  text-align: center; /* Center align the text */
+  border-radius: 8px; /* Rounded corners */
+  margin-bottom: 20px; /* Add some bottom margin */
+  font-family: "Montserrat", sans-serif; /* Use Montserrat font */
+}
+
+.unique-payment-receipts-component .admin-payment-receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.unique-payment-receipts-component .admin-payment-receipt-table th,
+.unique-payment-receipts-component .admin-payment-receipt-table td {
+  padding: 0.5rem;
+  color: var(--color-foreground);
+  border-bottom: 1px solid #ffffff50;
+}
+
+.unique-payment-receipts-component .admin-payment-receipt-table th {
+  background-color: #00000050;
+}
+
+.unique-payment-receipts-component .pdf-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* PDF icon button */
+.unique-payment-receipts-component .pdf-icon-btn {
+  background-color: #ff6b6b; /* Coral background color */
+  color: #fff; /* White icon color */
+  border: none;
+  cursor: pointer;
+  padding: 10px; /* Adjusted padding for better icon display */
+  border-radius: 50%; /* Circular shape */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out; /* Smooth hover effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+/* Icon styling */
+.unique-payment-receipts-component .pdf-icon-btn i {
+  font-size: 24px; /* Adjust icon size */
+}
+
+/* Hover effect */
+.unique-payment-receipts-component .pdf-icon-btn:hover {
+  transform: scale(1.1); /* Scale up on hover for a subtle effect */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increased shadow on hover */
+}
+
+/* Add gradient overlay on hover */
+.unique-payment-receipts-component .pdf-icon-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 107, 107, 0.8),
+    rgba(255, 206, 86, 0.8)
+  ); /* Gradient overlay */
+  opacity: 0; /* Initially transparent */
+  transition: opacity 0.3s ease-in-out; /* Smooth opacity transition */
+}
+
+/* Show gradient overlay on hover */
+.unique-payment-receipts-component .pdf-icon-btn:hover::before {
+  opacity: 1; /* Fully visible on hover */
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Ensure animations are scoped within the component */
+.unique-payment-receipts-component {
+  animation: gradient 15s infinite linear;
+}

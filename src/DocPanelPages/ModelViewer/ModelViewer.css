@@ -1,0 +1,149 @@
+ body {
+    margin: 0;
+    padding: 0;
+    /* font-family: Google Sans, Noto, Roboto, Helvetica Neue, sans-serif; */
+}
+
+
+.h2VIEW3D{
+    margin-top: -2%;
+    margin-bottom: 18px;
+    color: #244376;
+    text-align: center;
+}
+
+.h2VIEW3D1{
+    color: #244376;
+    
+}
+
+.SPANVIEW3D1{
+    font-size: x-large;
+}
+
+.ModelViewer{
+    background-color: whitesmoke;
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.homeButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 4px 28px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  z-index: 9999;
+}
+
+.backText {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .ModelViewer{
+    padding-bottom: 50%;
+  }
+
+  #backIcon-ModelViewer3D {
+    display: none ; /* Hide the back icon */
+    
+  }
+
+  
+
+  #backText-ModelViewer3D {
+    display: block; /* Display the back text */
+    text-align: center;
+    font-size: 19px;
+    color: white;
+    position: fixed; /* Position the back text at the bottom center */
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color:#207adb;/* Add a background color for better visibility */
+    padding: 4px 40px;
+    border-radius: 6px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* .h2VIEW3D{
+    margin-top: 2%;
+  } */
+}
+
+
+  
+  
+  #card {
+    margin: 3em auto;
+    margin-top: -1%;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+  
+  .text {
+    display: block;
+    text-align: center;
+    margin-top:20px;
+    font-size: 24px;
+  }
+  .text1 {
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 24px;
+  }
+  
+  .center {
+    display: block;
+    margin:auto;
+    margin-top: 100px;
+    width: 25%;
+  }
+  
+  model-viewer {
+    width: 100%;
+    height: 460px;
+    background-color: rgb(211, 211, 211,0.5);
+    --poster-color: #ffffff00;
+  }
+  
+  .attribution {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 1em;
+  }
+  
+  .attribution h1 {
+    margin: 0 0 0.25em;
+  }
+  
+  .attribution img {
+    opacity: 0.5;
+    height: 2em;
+  }
+  
+  .attribution .cc {
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  
+  /* footer {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+    font-style: italic;
+    line-height: 1.5em;
+  } */

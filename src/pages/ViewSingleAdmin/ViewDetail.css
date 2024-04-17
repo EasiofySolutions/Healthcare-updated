@@ -1,0 +1,149 @@
+.adminName{
+    margin-top: -3%;
+}
+                /* HIDE/SHOW BUTTON CSS  */
+                
+.ShowButton {
+  background-color: #4CAF50; 
+  border: none; 
+  color: white; 
+  padding: 12px 20px; 
+  font-size: 16px; 
+  cursor: pointer; 
+  border-radius: 18px; 
+  margin-bottom: 2%;
+}
+
+.ShowButton:hover {
+  background-color: #3e8e41 !important; }
+
+.ShowButton:focus {
+  outline: none; /* Remove outline on focus */
+}
+
+/* Styling for when the .ShowButton is in "Show Doctors" state */
+.ShowButton[data-state="show"] {
+  background-color: #4CAF50; /* Green background */
+}
+
+/* Styling for when the .ShowButton is in "Hide Doctors" state */
+.ShowButton[data-state="hide"] {
+  background-color: #f44336; /* Red background */
+}
+
+
+
+                  /* TABLE CSS */
+
+.styled-table1 {
+    border-collapse: collapse;
+    margin: auto;
+    margin-top: -2%;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    width: 90%;
+    box-shadow: 0 0 20px rgb(0, 0, 0, 0.15);
+    text-align: center;
+  }
+  
+  .styled-table1 thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+  }
+  
+  .th-head1 {
+    padding: 15px !important;
+    text-align: center !important;
+  }
+  
+  .styled-table1 th,
+  .styled-table1 td {
+    padding: 16px 80px 0px 85px;
+  }
+  
+  .styled-table1 tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .styled-table1 tbody tr:nth-of-type(even) {
+    background-color: #dae2b6;
+  }
+  
+  .styled-table1 tbody tr:nth-of-type(odd) {
+    background-color: #eafdfc;
+  }
+  
+  .styled-table1 tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+
+  /* BTN CSS */
+
+  .backbuttondetail{
+    text-align: center;
+  }
+
+  .backbutton2 {
+    margin-top: 1%;
+    width: 140px;
+    font-size:18px;
+    height: 40px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 8px;
+    text-align: center !important ;
+    margin-bottom: 5%;
+  }
+  
+  .backbutton2:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 8px;
+  }
+  
+  .backbutton2:active {
+    color: #000
+  }
+  
+  .backbutton2:active:after {
+    background: transparent;
+  }
+  
+  .backbutton2:hover:before {
+    opacity: 1;
+  }
+  
+  .backbutton2:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #DC3535;
+    left: 0;
+    top: 0;
+    border-radius: 8px;
+  }
+  
+  @keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+  }

@@ -1,0 +1,28 @@
+.ShowButton {
+    background-color: #4CAF50; 
+    border: none; 
+    color: white; 
+    padding: 12px 20px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    border-radius: 18px; 
+    margin-bottom: 2%;
+  }
+  
+  .ShowButton:hover {
+    background-color: #3e8e41 !important; }
+  
+  .ShowButton:focus {
+    outline: none; /* Remove outline on focus */
+  }
+  
+  /* Styling for when the .ShowButton is in "Show Doctors" state */
+  .ShowButton[data-state="show"] {
+    background-color: #4CAF50; /* Green background */
+  }
+  
+  /* Styling for when the .ShowButton is in "Hide Doctors" state */
+  .ShowButton[data-state="hide"] {
+    background-color: #f44336; /* Red background */
+  }
+  

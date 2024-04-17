@@ -1,0 +1,37 @@
+/* Spinner Container */
+.AutomateUpload-spinner-container {
+    display: flex;
+    flex-direction: column; /* Change to column */
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+  }
+  
+  /* Spinner Animation */
+  .AutomateUpload-spinner {
+    border: 8px solid #3498db;
+    border-top: 8px solid transparent;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 1.5s linear infinite;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Loading Text */
+  .AutomateUpload-loading-text {
+    margin-top: 20px;
+    color: #3498db;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+  

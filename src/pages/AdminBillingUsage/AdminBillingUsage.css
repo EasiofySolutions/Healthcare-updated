@@ -1,0 +1,220 @@
+.admin-billing-usage-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  min-height: 100vh;
+  width: 100%;
+  background: #f8f9fa;
+}
+
+.admin-billing-usage {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+  margin: 10px 0;
+}
+
+.admin-billing-header {
+  margin-top: 0;
+  text-align: center;
+  padding: 8px;
+  background: #4caf50;
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.month-selector-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.month-selector-label {
+  font-weight: bold;
+  margin-right: 10px;
+  color: black;
+  font-size: large;
+}
+
+.month-selector-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  width: 200px;
+}
+
+.Billing-table-usage {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.Billing-table-usage th,
+.Billing-table-usage td {
+  border: 1px solid #ddd;
+  padding: 7px;
+  text-align: left;
+}
+
+.billing-heading-usage {
+  background-color: #f0f8ff;
+  color: #4caf50;
+}
+
+.special-row-usage {
+  background-color: #f8f8f8; /* Light gray background */
+  color: #333; /* Dark text color */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.special-row-usage:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle box shadow for depth */
+}
+
+.special-row-usage td:first-child {
+  display: flex; /* Use flexbox to align button and doctor name */
+  align-items: center;
+}
+
+.special-row-usage button.toggle-icon-usage {
+  background-color: #4caf50; /* Green button background color */
+  color: #fff; /* White text color for the button */
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 10px; /* Add margin between button and doctor name */
+  transition: background-color 0.3s ease;
+}
+
+.special-row-usage button.toggle-icon-usage:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+.special-row-usage td:last-child {
+  text-align: center;
+  font-weight: 600; /* Make view count text bold */
+}
+
+.Billing-table-inner-usage {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.Billing-table-inner-usage th,
+.Billing-table-inner-usage td {
+  border: 1px solid #ddd;
+  padding: 7px;
+  text-align: left;
+}
+
+.Billing-table-inner-usage th {
+  background-color: #f0f8ff;
+  color: #4caf50;
+}
+
+.Billing-table-inner-usage td:last-child {
+  text-align: center;
+}
+
+.total-amount-usage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 7px;
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.total-amount-usage div:first-child,
+.total-amount-usage div:last-child {
+  flex: 1;
+  font-size: 24px;
+}
+
+.total-amount-usage div:last-child {
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.select-full-width-usage {
+  width: 100%; /* Make select fill the td */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+  border: 1px solid #ccc; /* Optional: styling the border */
+  border-radius: 4px; /* Optional: rounding the corners */
+  padding: 5px 10px; /* Optional: internal padding for aesthetics */
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: black;
+  border-radius: 4px;
+}
+
+/* Pagination Container */
+.pagination-usage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 8px; /* Adds space between buttons */
+}
+
+/* Pagination Buttons */
+.pagination-usage button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between icon and text */
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Active Button Styling */
+.pagination-usage .active-usage {
+  background-color: #409443;
+  font-weight: bold;
+  transform: scale(1.1); /* Slightly enlarges the active button */
+}
+
+/* Button Disabled Styling */
+.pagination-usage button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Hover Effect for Buttons */
+.pagination-usage button:not(:disabled):hover {
+  background-color: #4caf50;
+  transform: scale(1.05); /* Slightly enlarges the button on hover */
+}
+
+@media (max-width: 768px) {
+  .admin-billing-usage {
+    margin: 10px;
+    width: auto;
+  }
+
+  .month-selector-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .month-selector-input {
+    margin-top: 10px;
+    width: 100%;
+  }
+}

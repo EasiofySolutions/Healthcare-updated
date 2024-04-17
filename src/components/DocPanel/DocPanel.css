@@ -1,0 +1,491 @@
+/* Global styles */
+.headingDocPanel {
+    margin-top: 2%;
+  }
+
+  
+  .btn-3D:hover{
+    color: black;
+  }
+
+  .containerDocPanel{
+    margin-top: -5%;
+    white-space: nowrap;
+  }
+
+  .close-button-PresModal{
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Styles for the patient list */
+  .patient-listDOCPANEL {
+    margin-top: -6%;
+  }
+  
+  
+  
+  /* Styles for the logout button */
+  .logout {
+    margin-top: 2%;
+  }
+
+  .down-arrow {
+    margin-left: 5px; /* Add some spacing between "Action/View" and the arrow */
+    font-size: 20px; /* Adjust the size of the arrow */
+  }
+
+
+
+  /* Styles for the modal overlay */
+.modal-overlay-DocView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Styles for the modal content (no file uploaded)*/
+.modal-content-DocView {
+  position: relative;
+  background-color: #ffffff; /* White background */
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Soft drop shadow */
+  animation: fadeInUp 0.4s both;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Styles for the modal heading */
+.modal-content-DocView h2 {
+  font-size: 32px;
+  color: #333; /* Dark text color */
+  margin-bottom: 15px;
+}
+
+/* Styles for the modal paragraph */
+.modal-content-DocView p {
+  font-size: 18px;
+  color: #666; /* Medium text color */
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+/* Styles for the close button */
+.modal-close-btn-DocView {
+  background-color: #ff6363; /* Coral button color */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box-shadow */
+}
+
+/* Hover styles for the close button */
+.modal-close-btn-DocView:hover {
+  background-color: #ff4848; /* Darker coral on hover */
+}
+
+/* Entrance animation for the modal */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Background animation for the modal overlay */
+.modal-overlay-DocView::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, #ffbe0b, #ff6347); /* Gradient background */
+  opacity: 0.6;
+  pointer-events: none;
+  animation: animateGradient 4s linear infinite;
+}
+
+@keyframes animateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+
+
+
+/* STYLE FOR LICENSE MODAL */
+
+.custom-modal {
+  width: 300px;
+  height: 200px;
+  margin: auto;
+  margin-top: 20vh;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-title {
+  margin: 0;
+  margin-bottom: 10px;
+  color: #333333;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.modal-description {
+  margin: 0;
+  margin-bottom: 20px;
+  color: #666666;
+  font-size: 16px;
+}
+
+.modal-button {
+  padding: 8px 16px;
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* MEDIA QUERY FOR MOBILE */
+  
+
+@media (max-width: 768px) {
+    .div-mainTech {
+     margin-top: 12%;
+    }
+    
+    .logoutDocPanel {
+        margin-top: 5% !important;
+      }
+
+      /* Make the "View 3D" button smaller to fit in one line */
+table.styled-table td .btn.btn-view {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Optional: Reduce the spacing between the table cells for a compact look */
+table.styled-table td {
+  padding: 0.5rem;
+}
+
+  }
+
+
+  @media (max-width: 768px) {
+
+    .flash-message {
+  width: 100% !important; 
+}
+
+.table-doc{
+  margin-left: -5%;
+  
+}
+    
+    .styled-table {
+      width: 112%;
+    }
+
+.T-NAME{
+  margin-left: -22%;
+
+}
+
+.T-ACTIONDOC{
+  margin-right: 2% ;
+}
+
+.admin-nameDOC{
+  margin-left: 2%;
+  }
+
+  .TD-BUTTONDOC{
+    margin-right: 27% !important;
+  }
+
+  }
+  
+  /* Additional styles for 360 x 800 screen resolution */
+@media (max-width: 360px) and (max-height: 800px) {
+  .table-doc {
+    margin-left: -9%;
+  }
+  
+  .styled-table {
+    width: 105%; /* Make the table smaller to fit into the screen */
+  }
+
+  .T-NAME {
+    margin-left: -16%; /* Adjust the margin to better align the "Name" column */
+  }
+
+ 
+
+  .admin-nameDOC {
+    margin-left: 2%;
+    font-size: 0.8rem; /* Make the font size smaller for the name */
+  }
+
+  .TD-BUTTONDOC {
+    margin-right: 2% !important; /* Adjust the margin to better align the buttons */
+  }
+
+  /* Make the "View 3D" button even smaller */
+  table.styled-table td .btn.btn-view {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+  
+
+/* CSS STYLING FOR FLASH MESSAGE  */
+
+
+  /* Styles for the flash message */
+.flash-message {
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  width: 60%;
+  margin: 0 auto;
+}
+
+/* Styles for the text inside the container */
+.flash-text {
+  font-family: 'Playfair Display', serif;
+  display: inline-block;
+  padding-left: 100%; /* Start position outside the container */
+  animation: runningMessage 15s linear infinite, ease-in-out infinite alternate;
+  background-image: linear-gradient(135deg, #ffc400, #e85d74); /* Gradient background with vibrant colors */
+  color: #fff; /* Text color */
+  font-size: 24px; /* Adjust font size */
+  padding: 8px 16px; /* Add padding to the text for better spacing */
+  border-radius: 30px; /* Rounder corners for a pill-shaped effect */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Add a subtle shadow effect */
+  backface-visibility: hidden;
+}
+
+/* FOR RUNNING THE MESSAGE FROM LEFT TO RIGHT  */
+
+/* @keyframes runningMessage {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%); 
+  }
+}
+
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+} */
+
+
+/* FOR DISBALING THE BUTTONS  */
+
+.unclickable {
+  pointer-events: none;
+  opacity: 0.5; /* You can adjust the opacity to visually indicate the button is unclickable */
+}
+
+
+/* FOR DISPLAYING BUTTON AS DROPDOWN FOR MOBILE CSS  */
+
+.dropdownMobileMenuButtons {
+  position: absolute;
+  right: 4px;
+  width: 135px; /* Adjust the width as needed */
+  color: #333333;
+}
+
+
+/* stlye for table  */
+
+.docPanel-table-div{
+  width: 100% !important;
+  
+}
+
+.docPanel-table{
+  width: 100% !important;
+}
+
+
+/* Style for the search bar */
+
+
+.search-bar-container {
+  display: flex;
+  margin-bottom: -1%;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 2px 2px ;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input[type="text"] {
+  border: none;
+  background-color: transparent;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.search-button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 12px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+/* Additional styling for mobile view */
+@media (max-width: 768px) {
+  .search-bar-container {
+    width: 100%;
+    justify-items: center;
+    margin-left: 0;
+    justify-content: center;
+    margin-bottom: 1%;
+  }
+
+  .search-bar{
+    width: 100%;
+  }
+
+  .styled-table{
+    width : 110% !important
+    }
+}
+
+/* Updated CSS for the logout button (Option 1) */
+
+.logout-button-top {
+  position: absolute;
+  top: 25px;
+  right: 10px;
+}
+
+.logout-button-top button {
+  background: linear-gradient(135deg, #f06, #f00); /* Gradient background */
+  color: #fff;
+  border: none;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 16px;
+}
+
+.logout-button-top .button-icon {
+  margin-right: 8px;
+}
+
+.logout-button-top button:hover {
+  background: linear-gradient(135deg, #e60, #e00); /* Darker gradient on hover */
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hide the "Log Out" text on mobile devices */
+@media (max-width: 768px) {
+  .logout-button-top .button-text {
+    display: none;
+  }
+}
+
+/* Show a different icon (e.g., power-off) for mobile devices */
+@media (max-width: 768px) {
+  .logout-button-top .button-icon {
+    display: inline-block; /* Show the icon */
+    margin-right: 0px; /* Add some spacing between the icon and text */
+  }
+
+  .logout-button-top {
+    margin-top: -5%;
+    margin-right: -2%;
+  }
+
+  .headingDocPanel{
+    margin-left: -1%;
+    margin-bottom: -2%;
+  }
+
+  /* Style the icon (you can customize the color, size, etc.) */
+  .logout-button-top .button-icon i::before {
+    content: "\f011"; /* Unicode for the power-off icon */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 18px;
+    /* Add more styles as needed */
+  }
+}
+
+
+.Pagination-DoctorPanel {
+  margin-top: 20px; /* Adjust the margin as needed */
+}

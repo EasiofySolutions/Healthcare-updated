@@ -1,0 +1,13 @@
+.PatientData-container {
+  margin-top: -1px;
+  border-radius: 5%;
+}
+
+.patient-data-btn {
+  width: 90%;
+  border-radius: 5px;
+  text-align: center;
+  font-size: larger;
+}
+
+

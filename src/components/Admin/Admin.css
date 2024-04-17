@@ -1,0 +1,69 @@
+/* Dropdown Menu */
+.dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0; /* Remove default padding */
+}
+
+/* Dropdown Items */
+.dropdown-item {
+  color: #495057;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ced4da; /* Add border between items */
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Remove border from the last item */
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.AdminWelcome {
+  margin-top: -0.7%;
+  font-size: xx-large;
+}
+
+.div-mainAdmin {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 5%;
+}
+
+/* LINK BUTTON CSS */
+
+.btn-oneAdmin {
+  color: #fff;
+  background-color: rgba(22, 22, 22, 0.5);
+  border-radius: 10px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.btn-oneAdmin:hover {
+  background-color: rgb(113, 182, 205);
+  color: #fff;
+}
+
+.link-btnAdmin {
+  font-size: x-large;
+  text-decoration: none !important;
+  display: inline-block;
+  width: 35%;
+  margin-bottom: 2%;
+}
+
+@media (max-width: 768px) {
+  .div-mainAdmin {
+    margin-top: 20%;
+  }
+
+  .link-btnAdmin {
+    width: 60%;
+  }
+}

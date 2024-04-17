@@ -1,0 +1,220 @@
+.billing-backButton {
+  background-color: #4caf50;
+}
+
+.billing-backButton:hover {
+  color: #08470a;
+}
+
+.billing-body {
+  position: relative;
+  z-index: 1;
+}
+
+.billing-body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 255, 255, 1);
+  z-index: -1; /* Place the pseudo-element behind the content */
+}
+
+.billing-container {
+  position: absolute;
+  top: 5px; /* Set the margin-top to 3% */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%; /* Set the width directly */
+  max-width: none; /* Reset max-width */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  overflow: auto; /* Enable horizontal scrolling if needed */
+}
+
+.BillingAdminName {
+  color: #333;
+  font-size: 32px;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.Billing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.Billing-table th,
+.Billing-table td {
+  border: 1px solid #ddd;
+  padding: 7px;
+  text-align: left;
+}
+
+.billing-heading {
+  background-color: #f0f8ff;
+  color: #4caf50;
+}
+
+/* Improved style for the specific table row */
+.Billing-table tr.special-row td {
+  background-color: #f8f8f8; /* Light gray background */
+  color: #333; /* Dark text color */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.Billing-table tr.special-row button {
+  background-color: #4caf50; /* Green button background color */
+  color: #fff; /* White text color for the button */
+  border: none;
+  /* padding: 8px 12px; */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.Billing-table tr.special-row button:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+.Billing-table tr.special-row td:first-child {
+  display: flex; /* Use flexbox to align button and doctor name */
+  align-items: center;
+}
+
+.Billing-table tr.special-row button {
+  order: -1; /* Move the button to the start of the flex container */
+  margin-right: 10px; /* Add margin between button and doctor name */
+}
+
+.Billing-table tr.special-row td:last-child {
+  text-align: center;
+  font-weight:600; /* Make view count text bold */
+}
+
+/* Box shadow and hover effect for depth */
+.Billing-table tr.special-row:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle box shadow for depth */
+}
+
+
+.total-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 7px;
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.total-amount div:first-child {
+  flex: 1;
+  font-size: 24px;
+}
+
+.total-amount div:last-child {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+
+
+/* Pagination css  */
+
+/* Pagination Styles */
+.billing-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.billing-pagination-btn {
+  background-color: #4caf50;
+  color: white;
+  border: 1px solid #4caf50;
+  padding: 6px 12px;
+  margin: 0 3px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.billing-pagination-btn:hover {
+  background-color: #45a049;
+}
+
+.billing-pagination-btn:disabled {
+  background-color: #ddd;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.billing-pagination-ellipsis {
+  margin: 0 6px;
+  font-weight: bold;
+}
+
+/* Optional: Add styles for the previous and next icons */
+.billing-pagination i {
+  margin-right: 3px;
+}
+
+/* Optional: Adjust styles for the current page */
+.billing-pagination-btn.active {
+  background-color: #45a049;
+}
+
+/* Print button css  */
+
+.print-button {
+  margin-bottom: 1%;
+  background-color: #4caf50; /* Green color for the button */
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+}
+
+.print-button:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+/* specific styling for print version A4 size page  */
+
+@media print {
+  .billing-container {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+    width: 80%; /* Set the width to 80% for printing */
+    max-width: 100%;
+    margin: 0;
+    padding: 10px;
+    box-shadow: none;
+    background-color: #fff;
+  }
+
+  .total-amount {
+    background-color: #4caf50;
+    color: #fff;
+  }
+
+  .timestamp-select select::after {
+    display: none; /* Hide the dropdown arrow in print */
+  }
+
+  .billing-pagination,
+  .print-button {
+    display: none; /* Hide pagination and print button in print */
+  }
+}

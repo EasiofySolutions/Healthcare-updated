@@ -1,0 +1,55 @@
+.h2addadmin {
+    margin-top: 3%;
+    color: #144272 ;
+}
+
+.signupForm {
+margin: auto;
+padding: 15px;
+max-width: 400px;
+align-content: center;
+text-align: center;
+margin-top: 4%;
+background-color: rgba(0,0,0,0.5) !important;
+/* box-sizing: border-box; */
+/* border-radius: 10px; */
+}
+
+.strongaddadmin{
+    display: flex;
+    align-items: flex-end;
+    margin-left: 5%;
+    color:#F2E3DB;
+}
+
+.inputaddadmin {
+    width: 90%;
+    padding: 9px 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+
+}
+
+.addadminbtn{
+    width: 60%;
+    background-color: #4caf50;
+    color: white;
+    padding: 11px 20px;
+    /* margin: 15px 0; */
+    margin-top: 7%;
+    border: none;
+    border-radius: 36px;
+    cursor: pointer;
+}
+
+.addadminbtn:hover{
+    background-color: #45a049;
+
+}
+
+.inputPN{
+    color:  rgba(0,0,0,0.6);
+}

@@ -1,0 +1,138 @@
+
+.h2addadmin1 {
+    margin-top: 2%;
+    color: #144272 ;
+}
+
+/* input[type="file"] {
+    width: 80px;
+  } */
+
+/* Set color of "No file chosen" text to white for file input fields */
+input[type="file"] {
+  color: white;
+}
+
+  input[type=file] { width: 333px; border: 2px solid white; border-radius: 8px;height: 40px;padding-top: 4px; }
+
+.signupForm2 {
+margin: auto;
+padding: 15px;
+max-width: 400px;
+align-content: center;
+text-align: center;
+margin-top: 4%;
+background-color: rgba(0,0,0,0.4) !important;
+/* border-radius: 10px; */
+}
+
+.strongaddadmin{
+    display: flex;
+    align-items: flex-end;
+    margin-left: 5%;
+}
+
+.inputaddadmin {
+    width: 90%;
+    padding: 9px 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+
+}
+
+.addimagebtn{
+    width: 35%;
+    background-color: #4caf50;
+    color: white;
+    padding: 4px ;
+    /* margin: 15px 0; */
+    margin-top: 2%;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.addimagebtn:hover{
+    background-color: #45a049;
+
+}
+
+.inputPN{
+    color:  rgba(0,0,0,0.6);
+}
+
+.TechupdateBTN{
+    background-color: rgb(113, 182, 205) ;
+    border-radius: 8px;
+    margin-top: 1%;
+
+}
+
+.TechupdateBTN:hover{
+    background-color: #22A39F;
+}
+  
+   .modalUpload {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modalUpload h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .modal-upload-progress {
+    width: 100%;
+    height: 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .modal-upload-progress .bar {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .modal-upload-progress .bar-text {
+    position: absolute;
+    top: -25px;
+    right: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 9998; /* Adjust the z-index value as needed */
+  }
+
+ 
+
+
+
+
+
+
+
+  
+  

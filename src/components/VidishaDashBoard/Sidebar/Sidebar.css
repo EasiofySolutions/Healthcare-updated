@@ -1,0 +1,49 @@
+.sidebar {
+  background-color: white;
+  padding: 10px;
+  position: absolute;
+  left: 0;
+  top: 10;
+  height: 100vh;
+  width: 150px;
+  box-sizing: border-box;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media only screen and (max-width: 600px) {
+  .sidebar {
+      flex-direction: row;
+      height: 70px;
+      width: 100%;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 10px;
+      text-align: center;
+      justify-content: center;
+  }
+}
+
+  
+  .homeSidebar{
+  font-size: 1.25rem;
+  font-weight: 500;
+color: #000;
+  text-decoration: none;
+  
+  }
+  
+  .homeSidebar:hover {
+    color:cadetblue;
+    text-decoration: none;
+  }
+
+  .sidebar h3 {
+    color: white;
+    /* add other styles for the heading */
+  }
+  
+  
+  

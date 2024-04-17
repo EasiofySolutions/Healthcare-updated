@@ -1,0 +1,73 @@
+body {
+    background-image: url("../public/img1.jpg") ;
+    background-size: fill;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+@media screen and (max-width: 990px) {
+    body {
+        background-size: cover;
+        height: 95vh;
+    }
+}
+
+@media screen and (max-width: 640px) {
+body {
+    background-size: 160%;
+    /* height: 95vh ; */
+}
+}
+
+@media screen and (max-width: 550px) {
+    body {
+        background-size: 260%;
+        /* height: 95vh ; */
+    }
+    }
+
+    @media screen and (max-width: 450px) {
+        body {
+            background-size: 490%;
+            /* height: 95vh ; */
+        }
+        }
+
+
+
+        /* body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+          }
+          
+          body::before {
+            content: "";
+            background: linear-gradient(135deg, #b3cde0, #6497b1, #005b96);
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            animation: pulsateBackground 10s ease-in-out infinite;
+          }
+          
+          @keyframes pulsateBackground {
+            0% {
+              opacity: 0.8;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.1);
+            }
+            100% {
+              opacity: 0.8;
+              transform: scale(1);
+            }
+          } */
+          

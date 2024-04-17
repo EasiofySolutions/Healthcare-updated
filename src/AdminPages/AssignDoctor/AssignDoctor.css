@@ -1,0 +1,14 @@
+@media (max-width: 768px) {
+    .ASSIGNDOCADMINPANELTABLE{
+        margin-left: -3%;
+    }
+
+    .ASSIGNDOCADMINPANELTABLE .T-NAME {
+        margin-right: 8%;
+    }
+
+    .ASSIGNDOCADMINPANELTABLE .admin-name{
+        margin-left: 6% !important;
+     
+    }
+}

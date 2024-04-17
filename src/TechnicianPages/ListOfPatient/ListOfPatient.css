@@ -1,0 +1,174 @@
+@media (max-width: 768px) {
+    .styled-table {
+      width: 100%;
+    }
+
+    .homeButton{
+      display: none;
+    }
+  
+    .styled-table thead tr {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  
+    .styled-table th,
+    .styled-table td {
+      display: block;
+      text-align: center;
+      padding: 8px 5px;
+    }
+    
+    .styled-table tbody tr {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  
+    .styled-table tbody td {
+      width: 100%;
+    }
+  
+    .styled-table tbody td:last-child {
+      text-align: right;
+      margin-right: 6px;
+    }
+
+
+.INDEX{
+    margin-left: 4%;
+}
+  
+  .container.text-center button {
+    display: inline-block;
+    margin: 0 auto;
+  }
+
+  .ListofPatientTechPanel{
+    margin-left: -4%;
+  }
+  
+  .ListofPatientTechPanel .admin-name {
+    text-align: center !important;
+    margin-left: 10%;
+  }
+
+  /* Center-align and set width for searchBarTechPanelLOP */
+.searchBarTechPanelLOP {
+  width: 60% ;
+  margin-left: 0 !important;
+  margin-bottom: 2% !important;
+  }
+
+  }
+  
+
+  .ListofPatientTechPanel {
+margin-top: 1%;
+  }
+
+  /* Center-align and set width for searchBarTechPanelLOP */
+.searchBarTechPanelLOP {
+width: 60% ;
+margin-left: 20%;
+}
+
+/* .adminName-LOPT{
+  text-align: left;
+} */
+
+/* Center the pagination */
+.pagination-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1%;
+}
+
+/* Pagination container styles */
+.pagination-container {
+  display: inline-block;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.7); /* Background color with opacity */
+  border-radius: 30px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Box shadow for depth */
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Pagination button styles */
+.pagination-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 6px 20px;
+  font-size: 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Pagination button hover effect */
+.pagination-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Active button style */
+.active {
+  background-color: #0056b3;
+}
+
+/* Ellipsis style */
+.page-ellipsis {
+  font-size: 16px;
+  margin: 0 10px;
+}
+
+/* Disabled button styles */
+.pagination-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* "Last Page" button style */
+.btn-last {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 6px 20px;
+  font-size: 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* "Last Page" button hover effect */
+.btn-last:hover {
+  background-color: #0056b3;
+}
+
+/* Disable styles for disabled "Last Page" button */
+.btn-last:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+

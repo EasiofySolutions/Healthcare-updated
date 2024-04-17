@@ -1,0 +1,78 @@
+/* Add these styles to your existing CSS stylesheet */
+
+.custom-modal-prescription {
+    /* Your modal styles */
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    max-width: 80%;
+  }
+
+  .prescription-link { 
+    width: 150px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  
+.add-prescription-button {
+  width: 150px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  
+  .modal-title-prescription {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  
+  .modal-input-prescription {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .modal-input-prescription input[type="file"] {
+   align-items: center;
+  }
+  
+  .modal-input-prescription label {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modal-button-prescription {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .modal-button-prescription.upload {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .modal-button-prescription.cancel {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .modal-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  

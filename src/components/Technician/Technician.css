@@ -1,0 +1,43 @@
+.div-mainTech {
+    background-color: rgba(255,255,255,0.1);
+    padding: 5%;
+    margin-top: -3%;
+    /* width: 50%; */
+  }
+  
+  
+  
+  /* LINK BUTTON CSS */
+  
+  .btn-oneTech {
+    color: #FFF;
+    background-color:rgba(22, 22, 22, 0.5) ;
+    border-radius: 10px;
+    transition: all 0.3s;
+    position: relative;
+  }
+  
+  .btn-oneTech:hover{
+    background-color: rgb(113, 182, 205);
+    color: #fff;
+  }
+
+  
+  
+  .link-btnTech{
+      font-size:x-large;
+      text-decoration: none !important;
+  display: inline-block;
+  width: 35%;
+  margin-bottom: 3%;
+    }
+
+    @media (max-width: 768px) {
+      
+  
+      .link-btnTech{
+          width: 60% ;
+          /* margin-bottom: 15%;
+          margin-top: 10%; */
+      }
+    }

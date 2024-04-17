@@ -1,0 +1,47 @@
+.cpu-container {
+  width: 60%;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.billing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.billing-table th,
+.billing-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.billing-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: left;
+}
+
+.total {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.pay-now {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pay-now:hover {
+  background-color: #45a049;
+}

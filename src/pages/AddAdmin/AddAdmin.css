@@ -1,0 +1,78 @@
+.h2addadmin {
+    margin-top: 5%;
+    color: #144272 ;
+}
+
+.signupForm {
+margin: auto;
+padding: 15px;
+max-width: 400px;
+align-content: center;
+text-align: center;
+margin-top: 4%;
+background-color: rgba(0,0,0,0.5) !important;
+/* border-radius: 10px; */
+}
+
+.strongaddadmin{
+    display: flex;
+    align-items: flex-end;
+    margin-left: 5%;
+}
+
+.inputaddadmin {
+    width: 90%;
+    padding: 9px 10px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+
+}
+
+.addadminbtn{
+    width: 60%;
+    background-color: #4caf50;
+    color: white;
+    padding: 11px 20px;
+    /* margin: 15px 0; */
+    margin-top: 7%;
+    border: none;
+    border-radius: 36px;
+    cursor: pointer;
+}
+
+.addadminbtn:hover{
+    background-color: #45a049;
+
+}
+
+.checkbox-container label,
+p,
+div label {
+  color: white;
+}
+
+.custom-checkbox {
+  width: 15px;
+  height: 15px;
+}
+
+.input-group {
+    position: relative;
+  }
+  
+ .inputaddadmin-CPV{
+    margin-left: 5% !important;
+ }
+  .input-currency-symbol {
+    position: absolute;
+    top: 50%;
+    right: 88px; /* Adjust the distance from the right as needed */
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure the symbol doesn't interfere with input events */
+    font-weight: bolder;
+    font-size: x-large;
+  }
+  

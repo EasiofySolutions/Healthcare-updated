@@ -1,0 +1,475 @@
+.loader-payment-initialized-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(255, 255, 255, 0.8); /* Optional: Adds a light overlay to reduce page content visibility */
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+}
+
+.loader-payment-initialized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.loader-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #3399cc;
+  position: absolute;
+  animation: orbit 2s linear infinite;
+}
+
+.loader-dot:nth-child(1) {
+  animation-delay: -0.5s;
+}
+
+.loader-dot:nth-child(2) {
+  animation-delay: -1s;
+}
+
+.loader-dot:nth-child(3) {
+  animation-delay: -1.5s;
+}
+
+
+.payment-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8); /* Light background */
+  backdrop-filter: blur(5px); /* Apply blur to background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 10000;
+  color: #333; /* Dark text color */
+  font-family: "Poppins", sans-serif;
+}
+
+.payment-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lds-ripple {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid #4caf50; /* Updated spinner color */
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}
+
+.payment-message-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.payment-message-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #4caf50; /* Spinner color for consistency */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for depth */
+}
+
+.payment-message-container h5 {
+  font-size: 1rem;
+  color: #666; /* Dark grey for readability */
+}
+
+.payment-success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem; /* Large size for visibility */
+  color: #4caf50; /* Green color to signify success */
+}
+
+.payment-success-icon {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.billing-backButton {
+  background-color: #4caf50;
+}
+
+.billing-backButton:hover {
+  color: #08470a;
+}
+
+.billing-body {
+  position: relative;
+  z-index: 1;
+}
+
+.billing-body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 255, 255, 1);
+  z-index: -1; /* Place the pseudo-element behind the content */
+}
+
+.pay-button {
+  text-align: center;
+}
+
+.billing-container {
+  position: absolute;
+  top: 5px; /* Set the margin-top to 3% */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%; /* Set the width directly */
+  max-width: none; /* Reset max-width */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  overflow: auto; /* Enable horizontal scrolling if needed */
+}
+
+.BillingAdminName {
+  color: #333;
+  font-size: 32px;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.Billing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.Billing-table th,
+.Billing-table td {
+  border: 1px solid #ddd;
+  padding: 7px;
+  text-align: left;
+}
+
+.billing-heading {
+  background-color: #f0f8ff;
+  color: #4caf50;
+}
+
+/* Improved style for the specific table row */
+.Billing-table tr.special-row td {
+  background-color: #f8f8f8; /* Light gray background */
+  color: #333; /* Dark text color */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.Billing-table tr.special-row button {
+  background-color: #4caf50; /* Green button background color */
+  color: #fff; /* White text color for the button */
+  border: none;
+  /* padding: 8px 12px; */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.Billing-table tr.special-row button:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+.Billing-table tr.special-row td:first-child {
+  display: flex; /* Use flexbox to align button and doctor name */
+  align-items: center;
+}
+
+.Billing-table tr.special-row button {
+  order: -1; /* Move the button to the start of the flex container */
+  margin-right: 10px; /* Add margin between button and doctor name */
+}
+
+.Billing-table tr.special-row td:last-child {
+  text-align: center;
+  font-weight: 600; /* Make view count text bold */
+}
+
+/* Box shadow and hover effect for depth */
+.Billing-table tr.special-row:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle box shadow for depth */
+}
+
+.total-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 7px;
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.total-amount div:first-child {
+  flex: 1;
+  font-size: 24px;
+}
+
+.total-amount div:last-child {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+/* Pagination css  */
+
+/* Pagination Styles */
+.billing-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.billing-pagination-btn {
+  background-color: #4caf50;
+  color: white;
+  border: 1px solid #4caf50;
+  padding: 6px 12px;
+  margin: 0 3px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.billing-pagination-btn:hover {
+  background-color: #45a049;
+}
+
+.billing-pagination-btn:disabled {
+  background-color: #ddd;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.billing-pagination-ellipsis {
+  margin: 0 6px;
+  font-weight: bold;
+}
+
+/* Optional: Add styles for the previous and next icons */
+.billing-pagination i {
+  margin-right: 3px;
+}
+
+/* Optional: Adjust styles for the current page */
+.billing-pagination-btn.active {
+  background-color: #45a049;
+}
+
+/* Print button css  */
+
+.print-button {
+  margin-bottom: 1%;
+  background-color: #4caf50; /* Green color for the button */
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+}
+
+.print-button:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+/* specific styling for print version A4 size page  */
+
+@media print {
+  .Billing-table {
+    page-break-after: auto;
+  }
+  .Billing-table tr {
+    page-break-inside: avoid;
+  }
+  .page-break {
+    display: block;
+    page-break-before: always;
+  }
+
+  .billing-container {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+    width: 90%; /* Set the width to 80% for printing */
+    max-width: 100%;
+    margin: 0;
+    padding: 10px;
+    box-shadow: none;
+    background-color: #fff;
+  }
+
+  .total-amount {
+    background-color: #4caf50;
+    color: #fff;
+  }
+
+  .timestamp-select select::after {
+    display: none; /* Hide the dropdown arrow in print */
+  }
+
+  .billing-pagination,
+  .print-button {
+    display: none; /* Hide pagination and print button in print */
+  }
+}
+
+/* Add this CSS for the inner nested table */
+.Billing-table-inner {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.Billing-table-inner th,
+.Billing-table-inner td {
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.Billing-table-inner th {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.Billing-table-inner td select {
+  width: 100%;
+  padding: 2px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.Billing-table-inner td select:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.Billing-table-inner tr:nth-child(even) td {
+  background-color: #f2f2f2;
+}
+
+.Billing-table-inner tr:hover td {
+  background-color: #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+/* Payment upto date dailoge  css  */
+
+/* Full viewport animated background with flexbox centering */
+.success-theme {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  animation: backgroundShift 15s ease infinite;
+  background: linear-gradient(270deg, #00b09b, #96c93d, #00b09b, #96c93d);
+  background-size: 400% 400%;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes backgroundShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Updated "Go Back" button for better visual integration */
+.go-back-btn {
+  padding: 15px 40px;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 30px;
+  background-image: linear-gradient(to right, #00b09b, #96c93d);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.3s ease, background-image 0.3s ease;
+  cursor: pointer;
+}
+
+.go-back-btn:hover {
+  transform: scale(1.05);
+  background-image: linear-gradient(to left, #00b09b, #96c93d);
+}

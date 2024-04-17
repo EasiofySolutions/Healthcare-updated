@@ -1,0 +1,150 @@
+
+
+.adminlist {
+  margin-top: 2%;
+  font-weight: bold;
+  font-family: "Nunito", sans-serif;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  margin: auto;
+  margin-top: -3%;
+  font-size: 0.9rem;
+  font-family: sans-serif;
+  box-shadow: 0 0 20px rgb(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.styled-table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.th-head {
+  padding: 15px !important;
+  text-align: center !important;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 6px 80px 0px 85px;
+}
+
+.ViewAllAdminPageTable td {
+  padding: 10px 30px 10px 30px !important;
+}
+
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #dae2b6;
+}
+
+.styled-table tbody tr:nth-of-type(odd) {
+  background-color: #eafdfc;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.link-buttons {
+  display: flex;
+padding: 3%;
+}
+
+.btn {
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 4px 4px;
+  cursor: pointer;
+}
+
+.btn-view {
+  background-color: goldenrod;
+  color: black;
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 7px;
+}
+
+.btn-view:hover {
+  background-color: #009879;
+}
+
+
+.btn-edit {
+  background-color:cadetblue;
+  color: black;
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 7px;
+}
+
+.btn-edit:hover {
+  background-color: #009879;
+}
+
+.btn-delete {
+  background-color: #DC0000;
+  color: black;
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 7px;
+}
+
+.btn-delete:hover {
+  background-color: maroon;
+}
+
+.admin-name {
+  font-size: medium;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  white-space: nowrap; 
+}
+
+/* BACK BUTTON */
+
+.backbutton1 {
+  cursor: pointer;
+  margin-left: -5%;
+  width: 90px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  }
+
+  .backbutton1:hover{
+    color: black;
+    background-color: #86C8BC;
+  }
+
+@media screen and (max-width: 510px) {
+    .backbutton1 {
+        margin-left: 20%;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .backbutton1 {
+        margin-left: 50%;
+    }
+}
+
+@media screen and (max-width: 330px) {
+    .backbutton1 {
+        margin-left: 80%;
+    }
+}
+

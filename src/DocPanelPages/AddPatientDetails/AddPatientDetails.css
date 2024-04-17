@@ -1,0 +1,124 @@
+.BTN-3D{
+    cursor: pointer;
+    font-size: large;
+    background-color: lightblue;
+}
+
+.BTN-REPORT{
+    text-decoration: none !important;
+    font-size:large;
+    background-color: lightblue;
+    color: #000;
+}
+
+.BTN-3D:hover {
+    color: #0F6292;
+    background-color: rgb(0, 0, 0,0.5);    
+}
+
+.BTN-REPORT:hover {
+    background-color: rgb(0, 0, 0,0.5);
+}
+
+/* .homeButton {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: rgb(0, 123, 255,0.8);
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    z-index: 9999;
+  }
+
+  .homeButton:hover {
+    text-decoration: none;
+  } */
+
+  .homeButton {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 4px 28px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    z-index: 9999;
+  }
+  
+  .backText {
+    display: none;
+  }
+  
+  @media (max-width: 767px) {
+
+    .homeButton {
+        top: auto;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 4px 28px;
+        background-color: #0F6292;
+        border-radius: 14px;
+      }
+
+    .backText {
+      display: inline;
+    }
+  
+    #backIcon {
+      display: none;
+    }
+  }
+  
+
+  .homeButton:hover{
+    text-decoration: none;
+  }
+
+  .custom-modal {
+    width: 300px;
+    height: 200px;
+    margin: auto;
+    margin-top: 20vh;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-title {
+    margin: 0;
+    margin-bottom: 10px;
+    color: #333333;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .modal-description {
+    margin: 0;
+    margin-bottom: 20px;
+    color: #666666;
+    font-size: 16px;
+  }
+  
+  .modal-button {
+    padding: 8px 16px;
+    background: #4caf50;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  

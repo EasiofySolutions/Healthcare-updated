@@ -1,0 +1,44 @@
+.div-viewAll {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.viewAllName {
+  font-weight: bolder;
+}
+
+.divCenter {
+  margin-bottom: 8px;
+  position: relative;
+  width: 60%;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding-bottom: 6px;
+  border-radius: 8px;
+}
+
+.btn-update {
+  padding: 0px 5px 0px 7px;
+  position: absolute;
+  right: 0;
+  margin-right: 70px;
+}
+
+.btn-del {
+  padding: 0px 5px 0px 7px;
+  position: absolute;
+  right: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .divCenter {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 280px) {
+  .divCenter {
+    width: 100%;
+  }
+  .div-viewAll {
+    width: 150%;
+  }
+}

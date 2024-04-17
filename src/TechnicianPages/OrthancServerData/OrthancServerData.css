@@ -1,0 +1,63 @@
+/* OrthancServerData.css */
+
+.OrthancServerModal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px); /* Add backdrop filter for blur effect */
+    background-color: rgba(0, 0, 0, 0.5); /* Add semi-transparent background color */
+    z-index: 1000; /* Ensure modal is above other content */
+  }
+
+  .upload-warning {
+    color: red; /* Set the text color to red for a warning */
+    font-weight: bold; /* Make the text bold for emphasis */
+    font-size: 12px; /* You can adjust the font size as needed */
+    margin-top: 2px; /* Add some top margin to separate it from other content */
+  }
+
+  .AutomateUpload-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    z-index: 9999; /* Ensure it's on top of other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  
+  .DivsearchBarTechPanelOSD {
+    /* Center the search bar horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -6% !important;
+  }
+
+  .searchBarTechPanelOSD {
+    /* Set the width to 70% */
+    width: 70%;
+    display: flex;
+    align-items: center;
+  }
+  
+
+  @media (max-width: 768px) {
+    .tableOrthancServerData{
+      margin-left: -3% !important;
+    }
+
+    .T-ACTION-OSD{
+      margin-right: 6% !important;
+    }
+  }

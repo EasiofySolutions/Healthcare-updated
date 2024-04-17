@@ -1,0 +1,8 @@
+/* Hide the timestamp-select column for printing */
+.timestamp-select {
+    display: none;
+}
+
+.viewed-at-header{
+    display: none;
+}
