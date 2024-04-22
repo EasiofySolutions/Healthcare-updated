@@ -526,25 +526,40 @@ function AddImage() {
     setModalIsOpen(true);
     var files = Array.from(fileInput.files);
 
-    // Prepare FormData to send files to backend
-    const formData = new FormData();
-    formData.append("patientName", patientName); // Add patient name to FormData
+    var formData = new FormData();
+    formData.append("adminName1", adminName1);
+    formData.append("patientId", id);
+    formData.append("timestamp", Date.now());
+
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("files", file, file.webkitRelativePath);
     });
 
-    // Send files to Python backend
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      if (progress >= 95) {
+        clearInterval(progressInterval);
+      } else {
+        progress += 5;
+        setUploadProgress(progress);
+      }
+    }, 1000);
+
     try {
       const response = await fetch("http://127.0.0.1:5000/upload", {
         method: "POST",
         body: formData,
       });
 
+      clearInterval(progressInterval); // Stop the progress simulation
+      setUploadProgress(100); // Set progress to 100% on upload completion
+
       if (!response.ok) {
         throw new Error("Failed to upload files");
       }
 
       const result = await response.json();
+
       toast.success(result.message || "Your file is ready!", {
         position: "top-center",
       });
@@ -555,9 +570,9 @@ function AddImage() {
     } finally {
       setModalIsOpen(false);
     }
+    await incrementTotalUploads();
+    await uploadEvents();
   };
-
-  // for Increment Counts in the Database
 
   const incrementTotalUploads = async () => {
     const totalUploadsRef = ref(
@@ -565,68 +580,16 @@ function AddImage() {
       `superadmin/admins/${adminName1}/costing/TotalUpload`
     );
     try {
-      await runTransaction(totalUploadsRef, (currentValue) => {
-        return (currentValue || 0) + 1;
-      });
+      const snapshot = await get(totalUploadsRef);
+      // Convert the value to a number before incrementing
+      const currentUploads = Number(snapshot.val()) || 0;
+      await set(totalUploadsRef, currentUploads + 1);
       console.log("Total uploads incremented successfully.");
     } catch (error) {
       console.error("Failed to increment total uploads:", error);
     }
   };
-
-  //uplaod Events
-
-  // const uploadEvents = async () => {
-  //   try {
-  //     console.log("Technician Name:", technicianName);
-  //     console.log("Full Name:", FullName);
-
-  //     if (!technicianName || !FullName) {
-  //       console.error("TechnicianName or FullName is null or undefined");
-  //       return;
-  //     }
-
-  //     const currentDate = new Date();
-  //     const monthNames = [
-  //       "JAN",
-  //       "FEB",
-  //       "MAR",
-  //       "APR",
-  //       "MAY",
-  //       "JUN",
-  //       "JUL",
-  //       "AUG",
-  //       "SEP",
-  //       "OCT",
-  //       "NOV",
-  //       "DEC",
-  //     ];
-  //     const currentMonth = monthNames[currentDate.getMonth()];
-  //     const currentYear = currentDate.getFullYear();
-
-  //     const monthPath = `superadmin/admins/${adminName1}/costing/UploadEvents/${currentMonth} ${currentYear}`;
-  //     const monthRef = ref(db, monthPath);
-
-  //     console.log("Month Reference:", monthPath);
-
-  //     const snapshot = await get(child(monthRef, "/"));
-  //     const nextIndex = snapshot.exists() ? snapshot.size : 0;
-
-  //     const uploadData = {
-  //       TechnicianName: `${technicianName}`,
-  //       PatientName: `${FullName}`,
-  //       timeStamp: `${currentDate.getDate()}/${
-  //         currentDate.getMonth() + 1
-  //       }/${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`,
-  //     };
-
-  //     await set(child(monthRef, `/${nextIndex}`), uploadData);
-
-  //     console.log("Upload event added successfully.");
-  //   } catch (error) {
-  //     console.error("Failed to upload event:", error);
-  //   }
-  // };
+  //upload events
   const uploadEvents = async () => {
     try {
       console.log("Technician Name:", technicianName);
@@ -664,11 +627,11 @@ function AddImage() {
       const nextIndex = snapshot.exists() ? snapshot.size : 0;
 
       const uploadData = {
-        technician_name: `${technicianName}`,
-        patientname: `${FullName}`,
+        TechnicianName: `${technicianName}`,
+        PatientName: ` ${FullName}`,
         timeStamp: `${String(currentDate.getDate()).padStart(2, "0")}/${String(
           currentDate.getMonth() + 1
-        ).padStart(2, "0")}/${currentDate.getFullYear()} ${String(
+        ).padStart(2, "0")}/${currentDate.getFullYear()}, ${String(
           currentDate.getHours()
         ).padStart(2, "0")}:${String(currentDate.getMinutes()).padStart(
           2,
