@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable */
+
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ref as storageRef, uploadBytesResumable } from "firebase/storage";
-import {
-  get,
-  off,
-  onValue,
-  ref as rtdbRef,
-  set,
-  child,
-} from "firebase/database";
+import { get, off, onValue, ref as rtdbRef, set } from "firebase/database";
 import { storage, db } from "../../firebase-config";
 import "./OrthancServerData.css";
 import { Link } from "react-router-dom";
@@ -17,26 +12,6 @@ import { toast } from "react-toastify";
 import ErrorPage from "../../ErrorPage";
 import { format, parse } from "date-fns";
 import LoadingSpinner from "./LoadingSpinner/LoadingSpinner";
-
-// const extractName = (fullString) => {
-//   const match = fullString.match(/^[a-zA-Z.\^ ]+/);
-//   if (!match) return null;
-
-//   return match[0]
-//     .replace(/[^a-zA-Z ]+/g, " ")
-//     .replace(/\s+/g, " ")
-//     .trim();
-// };
-
-const extractName = (fullString) => {
-  const match = fullString.match(/^[a-zA-Z.^ ]+/); // Removed the unnecessary backslash before '^'
-  if (!match) return null;
-
-  return match[0]
-    .replace(/[^a-zA-Z ]+/g, " ") // Only allow letters and spaces
-    .replace(/\s+/g, " ") // Replace multiple spaces with a single space
-    .trim(); // Remove leading and trailing spaces
-};
 
 const OrthancServerData = () => {
   const [patientsData, setPatientsData] = useState([]);
@@ -54,7 +29,6 @@ const OrthancServerData = () => {
   const [doctorNamesList, setDoctorNamesList] = useState([]);
 
   var adminName1 = localStorage.getItem("adminName");
-  var technicianName = localStorage.getItem("Name");
 
   const orthancServerURL = "http://localhost:8050";
 
@@ -126,18 +100,7 @@ const OrthancServerData = () => {
     }
   };
 
-  const checkServerStatus = async () => {
-    try {
-      // Ensure this URL matches your Flask API configured route for health checks
-      await axios.get(`http://127.0.0.1:5000/health`);
-      return true; // Server is up
-    } catch (error) {
-      console.error("API server is down:", error);
-      return false; // Server is down or unreachable
-    }
-  };
-
-  const handleUploadConfirmation = async (
+  const handleUploadConfirmation = (
     studyInstanceUID,
     patientName,
     studyType,
@@ -146,19 +109,11 @@ const OrthancServerData = () => {
     PatientSex,
     StudyDate,
     ReferringPhysicianName,
-    patient,
-    modality
+    patient
   ) => {
-    const serverActive = await checkServerStatus();
-    if (!serverActive) {
-      toast.error("Please start the server first", { position: "top-center" });
-      return;
-    }
-
     const confirmed = window.confirm(
       "Are you sure you want to upload this file?"
     );
-
     if (confirmed) {
       uploadStudy(
         studyInstanceUID,
@@ -169,8 +124,7 @@ const OrthancServerData = () => {
         PatientSex,
         StudyDate,
         ReferringPhysicianName,
-        patient,
-        modality
+        patient
       );
     }
   };
@@ -245,11 +199,9 @@ const OrthancServerData = () => {
     PatientBirthDate,
     PatientSex,
     ReferringPhysicianName,
-    patient,
-    modality
+    patient
   ) => {
-    const sanitizedPatientName = extractName(patientName);
-    const patientKey = `Patient-${sanitizeFirebaseKey(sanitizedPatientName)}`;
+    const patientKey = `Patient-${sanitizeFirebaseKey(patientName)}`;
     const Gender = PatientSex;
     var DateOfStudy = StudyDate;
     DateOfStudy = format(
@@ -276,7 +228,14 @@ const OrthancServerData = () => {
     const patientExists = patientSnapshot.exists();
 
     // Set up a function to update the upload progress
+    const updateUploadProgress = (uploaded, remaining) => {
+      setUploadMessage(
+        `Uploading... (${uploaded} completed, ${remaining} remaining)`
+      );
+    };
+
     let uploadSuccessful = true;
+
     try {
       const seriesListResponse = await axios.get(
         `${orthancServerURL}/orthanc/studies/${studyInstanceUID}`
@@ -295,12 +254,6 @@ const OrthancServerData = () => {
         );
       }
 
-      const updateUploadProgress = (uploaded, remaining) => {
-        setUploadMessage(
-          `Uploading... (${uploaded} completed, ${remaining} remaining)`
-        );
-      };
-
       const totalInstances = instancesToUpload.length;
       let uploadedCount = 0;
 
@@ -309,7 +262,6 @@ const OrthancServerData = () => {
       const uploadPromises = instancesToUpload.map(async (instance, index) => {
         const seriesFolderPath = `${studyFolderPath}/${instance.seriesUID}/`; // Sub-folder path for each series, using the same main folder timestamp
         const seriesFolderRef = storageRef(storage, seriesFolderPath); // Reference to the series-specific folder
-        // let uploadSuccessful = true;
 
         try {
           await uploadInstance(instance, seriesFolderRef);
@@ -322,6 +274,7 @@ const OrthancServerData = () => {
             index > bufferThreshold
           ) {
             updateUploadProgress(uploadedCount, remainingCount);
+            index = 0; // Reset the index to trigger updates at the next bufferThreshold
           }
 
           setRemainingCount(remainingCount);
@@ -331,47 +284,11 @@ const OrthancServerData = () => {
           }
         } catch (error) {
           console.error("Error uploading instance:", error);
-          // uploadSuccessful = false;
+          uploadSuccessful = false;
         }
       });
 
       await Promise.all(uploadPromises);
-
-      // Log or handle failed uploads
-
-      const formData = new FormData();
-      formData.append("adminName1", adminName1);
-      formData.append("patientId", patientKey);
-      formData.append("timestamp", Date.now());
-      formData.append("folderpath", studyFolderPath);
-
-      for (const instance of instancesToUpload) {
-        const instanceResponse = await axios.get(
-          `${orthancServerURL}/orthanc/instances/${instance.ID}/file`,
-          { responseType: "blob" }
-        );
-        formData.append(
-          "files",
-          new Blob([instanceResponse.data]),
-          `${instance.seriesUID}/${instance.ID}.dcm`
-        );
-      }
-
-      const uploadResponse = await axios.post(
-        "http://127.0.0.1:5000/uploadortho",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (uploadResponse.data.message) {
-        console.log(uploadResponse.data.message);
-      } else if (uploadResponse.data.error) {
-        console.error(uploadResponse.data.error);
-      }
     } catch (error) {
       console.error("Error fetching study data:", error);
       toast.error("Data Uploading Failed...", { position: "top-center" });
@@ -393,7 +310,7 @@ const OrthancServerData = () => {
           Dicom_ReportURL: "",
           Date: DateOfStudy || "",
           FolderPath: studyFolderPath,
-          FullName: sanitizedPatientName,
+          FullName: patientName,
           Gender: genderLabel || "",
           ID: PatientID || "",
           Timestamp: currentTimestamp, // Add the current timestamp
@@ -401,20 +318,8 @@ const OrthancServerData = () => {
           Prescription: "",
           PrescriptionURL: "",
           Role: "Patient",
-          MetaData_Orthanc:
-            {
-              ID: patient.ID,
-              MainDicomTags: {
-                PatientID: patient.MainDicomTags.PatientID,
-                PaitentName: extractName(patient.MainDicomTags.PatientName),
-                PatientBirthDate: patient.MainDicomTags.PatientBirthDate,
-                PatientSex: patient.MainDicomTags.PatientSex,
-              },
-              Studyinstane: studyInstanceUID,
-            } || "",
+          MetaData_Orthanc: patient || "",
           Version: "02",
-          Modality:
-            modality === "MR" ? "MRI" : modality === "CR" ? "XRAY" : modality,
         };
         await set(
           rtdbRef(db, `superadmin/admins/${adminName1}/patients/${patientKey}`),
@@ -632,161 +537,21 @@ const OrthancServerData = () => {
       // if (!successMessageShownRef.current) {
       //   successMessageShownRef.current = true;
       setModalIsOpen(false);
-      if (uploadSuccessful) {
-        switch (modality) {
-          case "MR":
-            await MRIuploadCount(); // Increment MRI count
-            break;
-          case "CT":
-            await CTupload(); // Increment CT count
-            break;
-          case "CR":
-            await Xrayupload(); // Increment X-ray count
-            break;
-          default:
-            console.log("Unknown Modality");
-
-            break;
-        }
-      }
-
-      // await incrementTotalUploads();
-      // await uploadEvents(sanitizedPatientName);
+      toast.success("Data Uploaded Successfully", { position: "top-center" });
       // }
-    }
-  };
-
-  const MRIuploadCount = async () => {
-    const totalUploadsRef = rtdbRef(
-      db,
-      `superadmin/admins/${adminName1}/costing/MriUploads`
-    );
-    try {
-      const snapshot = await get(totalUploadsRef);
-      // Convert the value to a number before incrementing
-      const currentUploads = Number(snapshot.val()) || 0;
-      await set(totalUploadsRef, currentUploads + 1);
-      console.log("Total uploads incremented successfully.");
-    } catch (error) {
-      console.error("Failed to increment total uploads:", error);
-    }
-  };
-
-  const CTupload = async () => {
-    const totalUploadsRef = rtdbRef(
-      db,
-      `superadmin/admins/${adminName1}/costing/CTUploads`
-    );
-    try {
-      const snapshot = await get(totalUploadsRef);
-      // Convert the value to a number before incrementing
-      const currentUploads = Number(snapshot.val()) || 0;
-      await set(totalUploadsRef, currentUploads + 1);
-      console.log("Total uploads incremented successfully.");
-    } catch (error) {
-      console.error("Failed to increment total uploads:", error);
-    }
-  };
-
-  const Xrayupload = async () => {
-    const totalUploadsRef = rtdbRef(
-      db,
-      `superadmin/admins/${adminName1}/costing/XrayUploads`
-    );
-    try {
-      const snapshot = await get(totalUploadsRef);
-      // Convert the value to a number before incrementing
-      const currentUploads = Number(snapshot.val()) || 0;
-      await set(totalUploadsRef, currentUploads + 1);
-      console.log("Total uploads incremented successfully.");
-    } catch (error) {
-      console.error("Failed to increment total uploads:", error);
-    }
-  };
-
-  const incrementTotalUploads = async () => {
-    const totalUploadsRef = rtdbRef(
-      db,
-      `superadmin/admins/${adminName1}/costing/TotalUpload`
-    );
-    try {
-      const snapshot = await get(totalUploadsRef);
-      // Convert the value to a number before incrementing
-      const currentUploads = Number(snapshot.val()) || 0;
-      await set(totalUploadsRef, currentUploads + 1);
-      console.log("Total uploads incremented successfully.");
-    } catch (error) {
-      console.error("Failed to increment total uploads:", error);
-    }
-  };
-  //upload events
-  const uploadEvents = async (sanitizedPatientName) => {
-    try {
-      console.log("Technician Name:", technicianName);
-      console.log("Full Name:"); //Pass paitent name here
-
-      if (!technicianName || !sanitizedPatientName) {
-        console.error("TechnicianName or FullName is null or undefined");
-        return;
-      }
-
-      const currentDate = new Date();
-      const monthNames = [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
-      ];
-      const currentMonth = monthNames[currentDate.getMonth()];
-      const currentYear = currentDate.getFullYear();
-
-      const monthPath = `superadmin/admins/${adminName1}/costing/Upload_Events/${currentMonth} ${currentYear}`;
-      const monthRef = rtdbRef(db, monthPath);
-
-      console.log("Month Reference:", monthPath);
-
-      const snapshot = await get(child(monthRef, "/"));
-      const nextIndex = snapshot.exists() ? snapshot.size : 0;
-
-      const uploadData = {
-        TechnicianName: `${technicianName}`,
-        PatientName: ` ${sanitizedPatientName}`,
-        timeStamp: `${String(currentDate.getDate()).padStart(2, "0")}/${String(
-          currentDate.getMonth() + 1
-        ).padStart(2, "0")}/${currentDate.getFullYear()}, ${String(
-          currentDate.getHours()
-        ).padStart(2, "0")}:${String(currentDate.getMinutes()).padStart(
-          2,
-          "0"
-        )}:${String(currentDate.getSeconds()).padStart(2, "0")}`,
-      };
-
-      await set(child(monthRef, `/${nextIndex}`), uploadData);
-
-      console.log("Upload event added successfully.");
-    } catch (error) {
-      console.error("Failed to upload event:", error);
     }
   };
 
   useEffect(() => {
     if (patientsData.length === 0) {
-      const fetchSeriesForStudy = async (studyID) => {
+      const fetchStudiesForPatient = async (patientID) => {
         try {
           const response = await axios.get(
-            `${orthancServerURL}/orthanc/studies/${studyID}/series`
+            `${orthancServerURL}/orthanc/patients/${patientID}/studies`
           );
           return response.data;
         } catch (error) {
-          console.error(`Error fetching series for study ${studyID}:`, error);
+          console.error("Error fetching studies for patient:", error);
           return [];
         }
       };
@@ -803,45 +568,18 @@ const OrthancServerData = () => {
                 `${orthancServerURL}/orthanc/patients/${patientID}`
               );
               const studies = await fetchStudiesForPatient(patientID);
-              const studiesWithDetails = await Promise.all(
-                studies.map(async (study) => {
-                  const series = await fetchSeriesForStudy(study.ID); // Fetch series for the current study
-                  const firstSeriesModality =
-                    series.length > 0
-                      ? series[0].MainDicomTags.Modality
-                      : "N/A";
-                  return {
-                    ...study,
-                    FirstSeriesModality: firstSeriesModality,
-                  };
-                })
-              );
-              const studiesWithType = studiesWithDetails.map((study) => ({
+              const studiesWithType = studies.map((study) => ({
                 ...study,
                 type: study.MainDicomTags.StudyDescription,
               }));
               return {
                 ...patientDataResponse.data,
-                PatientName: extractName(
-                  patientDataResponse.data.MainDicomTags.PatientName
-                ),
                 Studies: studiesWithType,
                 originalIndex: index,
               };
             })
           );
           console.log("PATIENT DETAILS", patientsWithDetails);
-
-          let patientDetails = [];
-          patientsWithDetails.forEach((patient) => {
-            patient.Studies.forEach((study) => {
-              patientDetails.push(
-                `Patient Name: ${extractName(patient.PatientName)}, Modality: ${
-                  study.FirstSeriesModality
-                },ID:${patient.ID}`
-              );
-            });
-          });
 
           setPatientsData(patientsWithDetails);
 
@@ -857,117 +595,11 @@ const OrthancServerData = () => {
         }
       };
 
-      const fetchStudiesForPatient = async (patientID) => {
-        try {
-          const response = await axios.get(
-            `${orthancServerURL}/orthanc/patients/${patientID}/studies`
-          );
-          return response.data;
-        } catch (error) {
-          console.error("Error fetching studies for patient:", error);
-          return [];
-        }
-      };
-
       fetchPatientsData();
     } else {
       setLoading(false);
     }
   }, [patientsData]);
-
-  // useEffect(() => {
-  //   if (patientsData.length === 0) {
-  //     const fetchSeriesForStudy = async (studyID) => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/studies/${studyID}/series`
-  //         );
-  //         return response.data;
-  //       } catch (error) {
-  //         console.error(`Error fetching series for study ${studyID}:`, error);
-  //         return [];
-  //       }
-  //     };
-
-  //     const fetchPatientsData = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/patients`
-  //         );
-  //         const patientIDs = response.data;
-  //         const patientsWithDetails = await Promise.all(
-  //           patientIDs.map(async (patientID, index) => {
-  //             const patientDataResponse = await axios.get(
-  //               `${orthancServerURL}/orthanc/patients/${patientID}`
-  //             );
-  //             const studies = await fetchStudiesForPatient(patientID);
-  //             const studiesWithDetails = await Promise.all(
-  //               studies.map(async (study) => {
-  //                 const series = await fetchSeriesForStudy(study.ID); // Fetch series for the current study
-  //                 const seriesWithModality = series.map((serie) => ({
-  //                   ...serie,
-  //                   Modality: serie.MainDicomTags.Modality,
-  //                 }));
-  //                 return {
-  //                   ...study,
-  //                   Series: seriesWithModality,
-  //                 };
-  //               })
-  //             );
-  //             const studiesWithType = studiesWithDetails.map((study) => ({
-  //               ...study,
-  //               type: study.MainDicomTags.StudyDescription,
-  //             }));
-  //             return {
-  //               ...patientDataResponse.data,
-  //               Studies: studiesWithType,
-  //               originalIndex: index,
-  //             };
-  //           })
-  //         );
-  //         console.log("PATIENT DETAILS", patientsWithDetails);
-
-  //         patientsWithDetails.forEach((patient) => {
-  //           patient.Studies.forEach((study) => {
-  //             study.Series.forEach((serie) => {
-  //               console.log(
-  //                 `Patient Name: ${patient.PatientName}, Modality: ${serie.Modality}`
-  //               );
-  //             });
-  //           });
-  //         });
-
-  //         setPatientsData(patientsWithDetails);
-
-  //         setLoading(false);
-  //         localStorage.setItem(
-  //           "patientsData",
-  //           JSON.stringify(patientsWithDetails)
-  //         );
-  //         setUploadSpinner(true); // Start showing the spinner
-  //       } catch (error) {
-  //         console.error("Error fetching patient data:", error);
-  //         setError(error);
-  //       }
-  //     };
-
-  //     const fetchStudiesForPatient = async (patientID) => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/patients/${patientID}/studies`
-  //         );
-  //         return response.data;
-  //       } catch (error) {
-  //         console.error("Error fetching studies for patient:", error);
-  //         return [];
-  //       }
-  //     };
-
-  //     fetchPatientsData();
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [patientsData]);
 
   // CODE FOR UPLOADING ENTIRE PATIENT'S STUDIES ON PAGE LOAD
 
@@ -994,8 +626,7 @@ const OrthancServerData = () => {
         patient.MainDicomTags.PatientBirthDate,
         patient.MainDicomTags.PatientSex,
         study.MainDicomTags.ReferringPhysicianName,
-        patient,
-        study.FirstSeriesModality
+        patient
       );
     }
 
@@ -1003,40 +634,11 @@ const OrthancServerData = () => {
     uploadStudiesForPatientsWithEmptyFolderPath(remainingPatients);
   };
 
-  // useEffect(() => {
-  //   const delay = 9000; // 4 seconds in milliseconds
-  //   const timerId = setTimeout(() => {
-  //     const patientsToUpload = patientsData.filter((patient) => {
-  //       const patientKey = `Patient-${patient.MainDicomTags.PatientName}`;
-  //       const folderPath = firebasePatientData[patientKey]?.FolderPath;
-  //       return !folderPath || folderPath.trim() === "";
-  //     });
-
-  //     const totalPatients = patientsToUpload.length;
-  //     const uploadedPatients = patientsData.length - totalPatients;
-
-  //     const confirmed = window.confirm(`
-  //     Are you sure you want to upload the following patient studies?
-  //     Total Patients to Upload: ${totalPatients}
-  //     Patients Already Uploaded: ${uploadedPatients}
-  //   `);
-
-  //     if (confirmed) {
-  //       uploadStudiesForPatientsWithEmptyFolderPath(patientsToUpload);
-  //     }
-  //     setUploadSpinner(false);
-  //   }, delay);
-
-  //   return () => clearTimeout(timerId);
-  // }, [patientsData]);
-
   useEffect(() => {
-    const delay = 9000; // 9 seconds in milliseconds
-    const timerId = setTimeout(async () => {
+    const delay = 9000; // 4 seconds in milliseconds
+    const timerId = setTimeout(() => {
       const patientsToUpload = patientsData.filter((patient) => {
-        const patientKey = `Patient-${extractName(
-          patient.MainDicomTags.PatientName
-        )}`;
+        const patientKey = `Patient-${patient.MainDicomTags.PatientName}`;
         const folderPath = firebasePatientData[patientKey]?.FolderPath;
         return !folderPath || folderPath.trim() === "";
       });
@@ -1045,20 +647,12 @@ const OrthancServerData = () => {
       const uploadedPatients = patientsData.length - totalPatients;
 
       const confirmed = window.confirm(`
-        Are you sure you want to upload the following patient studies?
-        Total Patients to Upload: ${totalPatients}
-        Patients Already Uploaded: ${uploadedPatients}
-      `);
+      Are you sure you want to upload the following patient studies?
+      Total Patients to Upload: ${totalPatients}
+      Patients Already Uploaded: ${uploadedPatients}
+    `);
 
       if (confirmed) {
-        const serverActive = await checkServerStatus();
-        if (!serverActive) {
-          toast.error("Please start the server first", {
-            position: "top-center",
-          });
-          setUploadSpinner(false);
-          return;
-        }
         uploadStudiesForPatientsWithEmptyFolderPath(patientsToUpload);
       }
       setUploadSpinner(false);
@@ -1215,10 +809,7 @@ const OrthancServerData = () => {
             </thead>
             <tbody>
               {currentInstances.map((patient, index) => {
-                const patientKey = `Patient-${extractName(
-                  patient.MainDicomTags.PatientName
-                )}`;
-
+                const patientKey = `Patient-${patient.MainDicomTags.PatientName}`;
                 const isPatientWithFolderPath =
                   firebasePatientData[patientKey] &&
                   firebasePatientData[patientKey].FolderPath !== "";
@@ -1229,7 +820,7 @@ const OrthancServerData = () => {
                       {patient.originalIndex + 1}
                     </th>
                     <td className="admin-name">
-                      {extractName(patient.MainDicomTags.PatientName)}
+                      {patient.MainDicomTags.PatientName}
                     </td>
                     <td>
                       {isPatientWithFolderPath && (
@@ -1246,7 +837,7 @@ const OrthancServerData = () => {
                             onClick={() =>
                               handledownloadconfirmation(
                                 study.ID,
-                                extractName(patient.MainDicomTags.PatientName) // Corrected here
+                                patient.MainDicomTags.PatientName
                               )
                             }
                           >
@@ -1257,15 +848,14 @@ const OrthancServerData = () => {
                             onClick={() =>
                               handleUploadConfirmation(
                                 study.ID,
-                                extractName(patient.MainDicomTags.PatientName), // Corrected here
+                                patient.MainDicomTags.PatientName,
                                 study.type,
                                 study.MainDicomTags.StudyDate,
                                 patient.MainDicomTags.PatientID,
                                 patient.MainDicomTags.PatientBirthDate,
                                 patient.MainDicomTags.PatientSex,
                                 study.MainDicomTags.ReferringPhysicianName,
-                                patient,
-                                study.FirstSeriesModality
+                                patient
                               )
                             }
                           >

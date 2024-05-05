@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ref as storageRef, uploadBytesResumable } from "firebase/storage";
+
 import {
   get,
   off,
@@ -9,7 +9,7 @@ import {
   set,
   child,
 } from "firebase/database";
-import { storage, db } from "../../firebase-config";
+import { db } from "../../firebase-config";
 import "./OrthancServerData.css";
 import { Link } from "react-router-dom";
 import Modal from "react-modal";
@@ -17,16 +17,6 @@ import { toast } from "react-toastify";
 import ErrorPage from "../../ErrorPage";
 import { format, parse } from "date-fns";
 import LoadingSpinner from "./LoadingSpinner/LoadingSpinner";
-
-// const extractName = (fullString) => {
-//   const match = fullString.match(/^[a-zA-Z.\^ ]+/);
-//   if (!match) return null;
-
-//   return match[0]
-//     .replace(/[^a-zA-Z ]+/g, " ")
-//     .replace(/\s+/g, " ")
-//     .trim();
-// };
 
 const extractName = (fullString) => {
   const match = fullString.match(/^[a-zA-Z.^ ]+/); // Removed the unnecessary backslash before '^'
@@ -52,6 +42,7 @@ const OrthancServerData = () => {
   const [uploadSpinner, setUploadSpinner] = useState(false);
   const [firebasePatientData, setFirebasePatientData] = useState({}); // State for Firebase patient data
   const [doctorNamesList, setDoctorNamesList] = useState([]);
+  const [progress, setProgress] = useState({ total: 0, completed: 0 });
 
   var adminName1 = localStorage.getItem("adminName");
   var technicianName = localStorage.getItem("Name");
@@ -147,7 +138,8 @@ const OrthancServerData = () => {
     StudyDate,
     ReferringPhysicianName,
     patient,
-    modality
+    modality,
+    StudyInstaceUID
   ) => {
     const serverActive = await checkServerStatus();
     if (!serverActive) {
@@ -170,7 +162,8 @@ const OrthancServerData = () => {
         StudyDate,
         ReferringPhysicianName,
         patient,
-        modality
+        modality,
+        StudyInstaceUID
       );
     }
   };
@@ -193,47 +186,32 @@ const OrthancServerData = () => {
     };
   }, [uploadMessage]);
 
-  const uploadedInstances = new Set();
-
-  const uploadInstance = async (instance, studyFolderRef) => {
-    const instanceId = instance.ID;
-
-    if (uploadedInstances.has(instanceId)) {
-      console.log(`Instance ${instanceId} already uploaded. Skipping...`);
-      return;
-    }
-
-    try {
-      const instanceResponse = await axios.get(
-        `${orthancServerURL}/orthanc/instances/${instanceId}/file`,
-        {
-          responseType: "arraybuffer",
-        }
-      );
-
-      const instanceBlob = new Blob([instanceResponse.data], {
-        type: "application/dicom",
-      });
-
-      const instanceFileName = `${instanceId}.dcm`;
-      const instanceRef = storageRef(studyFolderRef, instanceFileName);
-      await uploadBytesResumable(instanceRef, instanceBlob);
-
-      uploadedInstances.add(instanceId);
-    } catch (error) {
-      console.error(`Error uploading instance ${instanceId}:`, error);
-    }
-  };
-
-  const updateFrequency = 10; // Number of instances after which to update the progress
-  const bufferThreshold = 10; // Number of instances to wait before updating after buffer is exceeded
-
   // code for sanitizing the name and replacing all the slashes if there's any
 
   const sanitizeFirebaseKey = (key) => {
     // Replace slashes with underscores
     key = key.replace(/\//g, "_");
     return key;
+  };
+
+  const listenToProgress = (patientId) => {
+    const eventSource = new EventSource(
+      `http://127.0.0.1:5000/progress/${patientId}`
+    );
+    eventSource.onmessage = (event) => {
+      try {
+        const progressInfo = JSON.parse(event.data);
+        setProgress(progressInfo);
+        setUploadMessage(
+          `Uploading... (${progressInfo.completed} of ${progressInfo.total} uploaded)`
+        );
+      } catch (error) {
+        console.error("Error parsing progress data:", error);
+      }
+    };
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
   };
 
   const uploadStudy = async (
@@ -246,10 +224,12 @@ const OrthancServerData = () => {
     PatientSex,
     ReferringPhysicianName,
     patient,
-    modality
+    modality,
+    StudyInstaceUID
   ) => {
     const sanitizedPatientName = extractName(patientName);
     const patientKey = `Patient-${sanitizeFirebaseKey(sanitizedPatientName)}`;
+    listenToProgress(patientKey);
     const Gender = PatientSex;
     var DateOfStudy = StudyDate;
     DateOfStudy = format(
@@ -259,7 +239,6 @@ const OrthancServerData = () => {
 
     const genderLabel =
       Gender === "M" ? "Male" : Gender === "F" ? "Female" : "Unknown";
-    console.log("Patient Study Date ---", DateOfStudy);
     const birthDate = PatientBirthDate;
     const age = new Date().getFullYear() - parseInt(birthDate.slice(0, 4), 10);
     const studyFolderPath = `superadmin/admins/${adminName1}/patients/${patientKey}/folder_${Date.now()}/`;
@@ -275,8 +254,11 @@ const OrthancServerData = () => {
     );
     const patientExists = patientSnapshot.exists();
 
-    // Set up a function to update the upload progress
     let uploadSuccessful = true;
+    let seriesInstanceUid = [];
+    let seriesDescription = [];
+    let seriesDescriptionMap = new Map(); // Map to hold series descriptions and their UIDs
+
     try {
       const seriesListResponse = await axios.get(
         `${orthancServerURL}/orthanc/studies/${studyInstanceUID}`
@@ -284,78 +266,60 @@ const OrthancServerData = () => {
       const instancesToUpload = []; // Initialize the array to collect instances
 
       for (const series of seriesListResponse.data.Series) {
+        const seriesInstanceUidres = await axios.get(
+          `${orthancServerURL}/orthanc/series/${series}`
+        );
+        const seriesDesc =
+          seriesInstanceUidres.data.MainDicomTags.SeriesDescription;
+        seriesDescription.push(seriesDesc);
+        seriesDescriptionMap.set(seriesDesc, series); // Map series description to its UID
+
         const seriesInstanceListResponse = await axios.get(
           `${orthancServerURL}/orthanc/series/${series}/instances`
         );
         instancesToUpload.push(
           ...seriesInstanceListResponse.data.map((instance) => ({
             ...instance,
-            seriesUID: series,
+            seriesDescription: seriesDesc, // Store series description with the instance
           }))
         );
       }
-
-      const updateUploadProgress = (uploaded, remaining) => {
-        setUploadMessage(
-          `Uploading... (${uploaded} completed, ${remaining} remaining)`
-        );
-      };
 
       const totalInstances = instancesToUpload.length;
       let uploadedCount = 0;
 
       setTotalInstances(totalInstances);
 
-      const uploadPromises = instancesToUpload.map(async (instance, index) => {
-        const seriesFolderPath = `${studyFolderPath}/${instance.seriesUID}/`; // Sub-folder path for each series, using the same main folder timestamp
-        const seriesFolderRef = storageRef(storage, seriesFolderPath); // Reference to the series-specific folder
-        // let uploadSuccessful = true;
-
-        try {
-          await uploadInstance(instance, seriesFolderRef);
-          uploadedCount++;
-          const remainingCount = totalInstances - uploadedCount;
-
-          if (
-            remainingCount === 0 ||
-            index % updateFrequency === 0 ||
-            index > bufferThreshold
-          ) {
-            updateUploadProgress(uploadedCount, remainingCount);
-          }
-
-          setRemainingCount(remainingCount);
-
-          if (uploadedCount === 1) {
-            updateUploadProgress();
-          }
-        } catch (error) {
-          console.error("Error uploading instance:", error);
-          // uploadSuccessful = false;
-        }
-      });
-
-      await Promise.all(uploadPromises);
-
-      // Log or handle failed uploads
-
       const formData = new FormData();
       formData.append("adminName1", adminName1);
       formData.append("patientId", patientKey);
       formData.append("timestamp", Date.now());
       formData.append("folderpath", studyFolderPath);
+      formData.append("SeriesName", seriesDescription);
 
-      for (const instance of instancesToUpload) {
-        const instanceResponse = await axios.get(
-          `${orthancServerURL}/orthanc/instances/${instance.ID}/file`,
-          { responseType: "blob" }
-        );
-        formData.append(
-          "files",
-          new Blob([instanceResponse.data]),
-          `${instance.seriesUID}/${instance.ID}.dcm`
-        );
-      }
+      const uploadPromises = instancesToUpload.map(async (instance, index) => {
+        try {
+          uploadedCount++;
+          const remainingCount = totalInstances - uploadedCount;
+
+          setRemainingCount(remainingCount);
+
+          const instanceResponse = await axios.get(
+            `${orthancServerURL}/orthanc/instances/${instance.ID}/file`,
+            { responseType: "blob" }
+          );
+          formData.append(
+            "files",
+            new Blob([instanceResponse.data]),
+            `${instance.seriesDescription}/${instance.ID}.dcm`
+          );
+        } catch (error) {
+          console.error("Error uploading instance:", error);
+          uploadSuccessful = false;
+        }
+      });
+
+      await Promise.all(uploadPromises);
 
       const uploadResponse = await axios.post(
         "http://127.0.0.1:5000/uploadortho",
@@ -410,7 +374,8 @@ const OrthancServerData = () => {
                 PatientBirthDate: patient.MainDicomTags.PatientBirthDate,
                 PatientSex: patient.MainDicomTags.PatientSex,
               },
-              Studyinstane: studyInstanceUID,
+              StudyInstanceUID: StudyInstaceUID,
+              SeriesInstaceUID: seriesInstanceUid,
             } || "",
           Version: "02",
           Modality:
@@ -420,9 +385,8 @@ const OrthancServerData = () => {
           rtdbRef(db, `superadmin/admins/${adminName1}/patients/${patientKey}`),
           patientData
         );
+        toast.success("Files Uplaoded SuccessFully");
       }
-
-      // const referringPhysicianName = "K M Goyal";
 
       const findMatchingDoctor = (referringPhysicianName, doctorNamesList) => {
         // console.log("List of Doctor ---",doctorNamesList)
@@ -649,12 +613,444 @@ const OrthancServerData = () => {
             break;
         }
       }
-
-      // await incrementTotalUploads();
-      // await uploadEvents(sanitizedPatientName);
-      // }
     }
   };
+
+  // const uploadStudy = async (
+  //   studyInstanceUID,
+  //   patientName,
+  //   studyType,
+  //   StudyDate,
+  //   PatientID,
+  //   PatientBirthDate,
+  //   PatientSex,
+  //   ReferringPhysicianName,
+  //   patient,
+  //   modality,
+  //   StudyInstaceUID
+  // ) => {
+  //   const sanitizedPatientName = extractName(patientName);
+  //   const patientKey = `Patient-${sanitizeFirebaseKey(sanitizedPatientName)}`;
+  //   const Gender = PatientSex;
+  //   var DateOfStudy = StudyDate;
+  //   DateOfStudy = format(
+  //     parse(StudyDate, "yyyyMMdd", new Date()),
+  //     "dd/MM/yyyy"
+  //   );
+
+  //   const genderLabel =
+  //     Gender === "M" ? "Male" : Gender === "F" ? "Female" : "Unknown";
+  //   console.log("Patient Study Date ---", DateOfStudy);
+  //   const birthDate = PatientBirthDate;
+  //   const age = new Date().getFullYear() - parseInt(birthDate.slice(0, 4), 10);
+  //   const studyFolderPath = `superadmin/admins/${adminName1}/patients/${patientKey}/folder_${Date.now()}/`;
+
+  //   const DoctorName = ReferringPhysicianName;
+  //   const currentTimestamp = new Date().toLocaleString("en-GB"); // Format the timestamp as "dd/mm/yyyy hh:mm:ss"
+
+  //   setModalIsOpen(true);
+  //   setUploadMessage("Please wait, getting files ready");
+
+  //   const patientSnapshot = await get(
+  //     rtdbRef(db, `superadmin/admins/${adminName1}/patients/${patientKey}`)
+  //   );
+  //   const patientExists = patientSnapshot.exists();
+
+  //   const updateUploadProgress = (uploaded, remaining) => {
+  //     setUploadMessage(
+  //       `Uploading... (${uploaded} completed, ${remaining} remaining)`
+  //     );
+  //   };
+
+  //   // Set up a function to update the upload progress
+  //   let uploadSuccessful = true;
+  //   let seriesInstanceUid = [];
+  //   let seriesDescription = [];
+  //   let seriesDescriptionMap = new Map(); // Map to hold series descriptions and their UIDs
+
+  //   try {
+  //     const seriesListResponse = await axios.get(
+  //       `${orthancServerURL}/orthanc/studies/${studyInstanceUID}`
+  //     );
+  //     const instancesToUpload = []; // Initialize the array to collect instances
+
+  //     for (const series of seriesListResponse.data.Series) {
+  //       const seriesInstanceUidres = await axios.get(
+  //         `${orthancServerURL}/orthanc/series/${series}`
+  //       );
+
+  //       const seriesDesc =
+  //         seriesInstanceUidres.data.MainDicomTags.SeriesDescription;
+  //       console.log(seriesDesc, "SeriesDescription");
+  //       seriesDescription.push(seriesDesc);
+  //       seriesDescriptionMap.set(seriesDesc, series); // Map series description to its UID
+
+  //       const seriesInstanceListResponse = await axios.get(
+  //         `${orthancServerURL}/orthanc/series/${series}/instances`
+  //       );
+  //       instancesToUpload.push(
+  //         ...seriesInstanceListResponse.data.map((instance) => ({
+  //           ...instance,
+  //           seriesDescription: seriesDesc, // Store series description with the instance
+  //         }))
+  //       );
+  //     }
+  //     const totalInstances = instancesToUpload.length;
+  //     let uploadedCount = 0;
+
+  //     setTotalInstances(totalInstances);
+
+  //     const uploadPromises = instancesToUpload.map(async (instance, index) => {
+  //       const seriesFolderPath = `${studyFolderPath}/${instance.seriesDescription}/`; // Use seriesDescription for the folder path
+  //       //  const seriesFolderRef = storageRef(storage, seriesFolderPath);
+
+  //       try {
+  //         await uploadInstance(instance, seriesFolderPath);
+  //         uploadedCount++;
+  //         const remainingCount = totalInstances - uploadedCount;
+
+  //         if (
+  //           remainingCount === 0 ||
+  //           index % updateFrequency === 0 ||
+  //           index > bufferThreshold
+  //         ) {
+  //           updateUploadProgress(uploadedCount, remainingCount);
+  //           index = 0; // Reset the index to trigger updates at the next bufferThreshold
+  //         }
+
+  //         setRemainingCount(remainingCount);
+
+  //         if (uploadedCount === 1) {
+  //           updateUploadProgress();
+  //         }
+  //       } catch (error) {
+  //         console.error("Error uploading instance:", error);
+  //         uploadSuccessful = false;
+  //       }
+  //     });
+
+  //     await Promise.all(uploadPromises);
+
+  //     // Log or handle failed uploads
+
+  //     const formData = new FormData();
+  //     formData.append("adminName1", adminName1);
+  //     formData.append("patientId", patientKey);
+  //     formData.append("timestamp", Date.now());
+  //     formData.append("folderpath", studyFolderPath);
+  //     formData.append("SeriesName", seriesDescription);
+  //     for (const instance of instancesToUpload) {
+  //       const instanceResponse = await axios.get(
+  //         `${orthancServerURL}/orthanc/instances/${instance.ID}/file`,
+
+  //         { responseType: "blob" }
+  //       );
+  //       formData.append(
+  //         "files",
+  //         new Blob([instanceResponse.data]),
+  //         `${seriesDescription}/${instance.ID}.dcm`
+  //       );
+  //     }
+
+  //     const uploadResponse = await axios.post(
+  //       "http://127.0.0.1:5000/uploadortho",
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     if (uploadResponse.data.message) {
+  //       console.log(uploadResponse.data.message);
+  //     } else if (uploadResponse.data.error) {
+  //       console.error(uploadResponse.data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching study data:", error);
+  //     toast.error("Data Uploading Failed...", { position: "top-center" });
+  //     uploadSuccessful = false;
+  //   }
+
+  //   if (uploadSuccessful) {
+  //     const folderPath = `superadmin/admins/${adminName1}/patients/${patientKey}`;
+  //     await set(rtdbRef(db, `${folderPath}/FolderPath`), studyFolderPath);
+
+  //     // Upload was successful, save patient data
+  //     if (!patientExists) {
+  //       const patientData = {
+  //         Age: age || "NA",
+  //         Refered_By_Doctor: DoctorName || "NA",
+  //         Dicom_3D: "",
+  //         Dicom_3DURL: "",
+  //         Dicom_Report: "",
+  //         Dicom_ReportURL: "",
+  //         Date: DateOfStudy || "",
+  //         FolderPath: studyFolderPath,
+  //         FullName: sanitizedPatientName,
+  //         Gender: genderLabel || "",
+  //         ID: PatientID || "",
+  //         Timestamp: currentTimestamp, // Add the current timestamp
+  //         Type_of_CT: studyType || "",
+  //         Prescription: "",
+  //         PrescriptionURL: "",
+  //         Role: "Patient",
+  //         MetaData_Orthanc:
+  //           {
+  //             ID: patient.ID,
+  //             MainDicomTags: {
+  //               PatientID: patient.MainDicomTags.PatientID,
+  //               PaitentName: extractName(patient.MainDicomTags.PatientName),
+  //               PatientBirthDate: patient.MainDicomTags.PatientBirthDate,
+  //               PatientSex: patient.MainDicomTags.PatientSex,
+  //             },
+  //             StudyInstanceUID: StudyInstaceUID,
+  //             SeriesInstaceUID: seriesInstanceUid,
+  //           } || "",
+  //         Version: "02",
+  //         Modality:
+  //           modality === "MR" ? "MRI" : modality === "CR" ? "XRAY" : modality,
+  //       };
+  //       await set(
+  //         rtdbRef(db, `superadmin/admins/${adminName1}/patients/${patientKey}`),
+  //         patientData
+  //       );
+  //     }
+
+  //     // const referringPhysicianName = "K M Goyal";
+
+  //     const findMatchingDoctor = (referringPhysicianName, doctorNamesList) => {
+  //       // console.log("List of Doctor ---",doctorNamesList)
+  //       // Special case: if ReferringPhysicianName is "DR R K VERMA", assign to "Rajkumar Verma" and associates
+  //       if (referringPhysicianName.toLowerCase() === "dr r k verma") {
+  //         const rajkumarVermaSpecialization = "(Medicine)";
+  //         const rajkumarVerma = `Rajkumar Verma ${rajkumarVermaSpecialization}`;
+
+  //         const doctorsWithSameSpecialization = doctorNamesList.filter(
+  //           (doctor) =>
+  //             doctor.includes(rajkumarVermaSpecialization) &&
+  //             doctor !== rajkumarVerma
+  //         );
+
+  //         return [rajkumarVerma, ...doctorsWithSameSpecialization];
+  //       }
+
+  //       if (!referringPhysicianName || doctorNamesList.length === 0) {
+  //         return ["Doctor Common"]; // No referring physician name or no doctors in the list
+  //       }
+
+  //       const cleanReferringPhysicianName = cleanDoctorName(
+  //         referringPhysicianName
+  //       );
+  //       const matchingDoctors = [];
+
+  //       console.log(
+  //         "Cleaned Referring Physician Name:",
+  //         cleanReferringPhysicianName
+  //       );
+
+  //       const matchingFirstNames = [];
+  //       let foundMatchOnFirstName = false;
+
+  //       for (const doctorName of doctorNamesList) {
+  //         const cleanDoctor = cleanDoctorName(doctorName);
+  //         console.log("Cleaned Doctor Name:", cleanDoctor);
+
+  //         const doctorTokens = cleanDoctor.split(" ");
+  //         const referringPhysicianTokens =
+  //           cleanReferringPhysicianName.split(" ");
+
+  //         // Check if the first name from the referring physician name matches with the first name from the doctor name
+  //         if (referringPhysicianTokens[0] === doctorTokens[0]) {
+  //           foundMatchOnFirstName = true;
+  //           matchingFirstNames.push(doctorName);
+  //           console.log("Match found based on first name:", doctorName);
+  //         }
+  //       }
+
+  //       // If there is only one match based on the first name, use that and add associated doctors
+  //       if (matchingFirstNames.length === 1) {
+  //         const matchingFirstName = matchingFirstNames[0];
+  //         matchingDoctors.push(matchingFirstName);
+
+  //         // Check for specialization and add other doctors with the same specialization
+  //         const specializationMatch = /\(([^)]+)\)/.exec(matchingFirstName);
+  //         if (specializationMatch) {
+  //           const specialization = specializationMatch[1];
+  //           const doctorsWithSameSpecialization = doctorNamesList.filter(
+  //             (otherDoctor) =>
+  //               otherDoctor.includes(`(${specialization})`) &&
+  //               !matchingDoctors.includes(otherDoctor)
+  //           );
+  //           matchingDoctors.push(...doctorsWithSameSpecialization);
+  //           console.log(
+  //             "Doctors with the same specialization:",
+  //             doctorsWithSameSpecialization
+  //           );
+  //         }
+  //       } else if (matchingFirstNames.length > 1) {
+  //         // If no match is found based on first name or multiple matches on the first name, check for both first name and last name
+  //         for (const doctorName of matchingFirstNames) {
+  //           const cleanDoctor = cleanDoctorName(doctorName);
+  //           console.log("Cleaned Doctor Name:", cleanDoctor);
+
+  //           const doctorTokens = cleanDoctor.split(" ");
+  //           const referringPhysicianTokens =
+  //             cleanReferringPhysicianName.split(" ");
+
+  //           // Check if both first name and last name from the referring physician name match with the doctor name
+  //           if (
+  //             referringPhysicianTokens[0] === doctorTokens[0] &&
+  //             referringPhysicianTokens[1] === doctorTokens[1]
+  //           ) {
+  //             matchingDoctors.push(doctorName);
+  //             console.log(
+  //               "Match found based on both first and last name:",
+  //               doctorName
+  //             );
+
+  //             // Check for specialization and add other doctors with the same specialization
+  //             const specializationMatch = /\(([^)]+)\)/.exec(doctorName);
+  //             if (specializationMatch) {
+  //               const specialization = specializationMatch[1];
+  //               const doctorsWithSameSpecialization = doctorNamesList.filter(
+  //                 (otherDoctor) =>
+  //                   otherDoctor.includes(`(${specialization})`) &&
+  //                   !matchingDoctors.includes(otherDoctor)
+  //               );
+  //               matchingDoctors.push(...doctorsWithSameSpecialization);
+  //               console.log(
+  //                 "Doctors with the same specialization:",
+  //                 doctorsWithSameSpecialization
+  //               );
+  //             }
+
+  //             // Break out of the loop once a match is found
+  //             break;
+  //           }
+  //         }
+  //       }
+
+  //       // If no match is found in steps 1 and 2, check for last name only
+  //       if (!foundMatchOnFirstName && matchingDoctors.length === 0) {
+  //         for (const doctorName of doctorNamesList) {
+  //           const cleanDoctor = cleanDoctorName(doctorName);
+  //           console.log("Cleaned Doctor Name:", cleanDoctor);
+
+  //           const doctorTokens = cleanDoctor.split(" ");
+  //           const referringPhysicianTokens =
+  //             cleanReferringPhysicianName.split(" ");
+
+  //           // Check if the last name from the referring physician name matches with the last name from the doctor name
+  //           if (
+  //             referringPhysicianTokens.some((token) =>
+  //               doctorTokens.includes(token)
+  //             ) ||
+  //             referringPhysicianTokens.some((token) =>
+  //               cleanDoctor.endsWith(token)
+  //             )
+  //           ) {
+  //             matchingDoctors.push(doctorName);
+  //             console.log("Match found based on last name:", doctorName);
+
+  //             // Check for specialization and add other doctors with the same specialization
+  //             const specializationMatch = /\(([^)]+)\)/.exec(doctorName);
+  //             if (specializationMatch) {
+  //               const specialization = specializationMatch[1];
+  //               const doctorsWithSameSpecialization = doctorNamesList.filter(
+  //                 (otherDoctor) =>
+  //                   otherDoctor.includes(`(${specialization})`) &&
+  //                   !matchingDoctors.includes(otherDoctor)
+  //               );
+  //               matchingDoctors.push(...doctorsWithSameSpecialization);
+  //               console.log(
+  //                 "Doctors with the same specialization:",
+  //                 doctorsWithSameSpecialization
+  //               );
+  //             }
+
+  //             // Break out of the loop once a match is found
+  //             break;
+  //           }
+  //         }
+  //       }
+
+  //       // If no match is found, add "Doctor Common" if present in the list
+  //       const commonDoctor = "Doctor Common";
+  //       if (
+  //         matchingDoctors.length === 0 &&
+  //         doctorNamesList.includes(commonDoctor)
+  //       ) {
+  //         matchingDoctors.push(commonDoctor);
+  //         console.log("Common Doctor assigned");
+  //       }
+
+  //       return matchingDoctors.length > 0 ? matchingDoctors : null; // Return array or null
+  //     };
+
+  //     const cleanDoctorName = (name) => {
+  //       // Implement any cleaning or formatting logic here (e.g., converting to lowercase)
+  //       return name.toLowerCase();
+  //     };
+
+  //     const assignedDoctor = findMatchingDoctor(
+  //       ReferringPhysicianName,
+  //       doctorNamesList
+  //     );
+
+  //     if (assignedDoctor) {
+  //       // Save the assigned doctor in the Realtime Database
+  //       await set(
+  //         rtdbRef(
+  //           db,
+  //           `superadmin/admins/${adminName1}/patients/${patientKey}/DoctorAssigned`
+  //         ),
+  //         assignedDoctor
+  //       );
+  //     } else {
+  //       console.warn(`No matching doctor found for ${ReferringPhysicianName}`);
+  //     }
+
+  //     // Update local state immediately after successful upload
+  //     setFirebasePatientData((prevData) => ({
+  //       ...prevData,
+  //       [patientKey]: {
+  //         ...prevData[patientKey],
+  //         FolderPath: studyFolderPath,
+  //       },
+  //     }));
+
+  //     console.log("FolderPath updated in Realtime Database");
+  //     console.log("Study DICOM images uploaded to Firebase Storage");
+
+  //     // Check if the success message has already been shown using the ref
+  //     // if (!successMessageShownRef.current) {
+  //     //   successMessageShownRef.current = true;
+  //     setModalIsOpen(false);
+  //     // if (uploadSuccessful) {
+  //     //   switch (modality) {
+  //     //     case "MR":
+  //     //       await MRIuploadCount(); // Increment MRI count
+  //     //       break;
+  //     //     case "CT":
+  //     //       await CTupload(); // Increment CT count
+  //     //       break;
+  //     //     case "CR":
+  //     //       await Xrayupload(); // Increment X-ray count
+  //     //       break;
+  //     //     default:
+  //     //       console.log("Unknown Modality");
+
+  //     //       break;
+  //     //   }
+  //     // }
+
+  //     // await incrementTotalUploads();
+  //     // await uploadEvents(sanitizedPatientName);
+  //     // }
+  //   }
+  // };
 
   const MRIuploadCount = async () => {
     const totalUploadsRef = rtdbRef(
@@ -810,9 +1206,17 @@ const OrthancServerData = () => {
                     series.length > 0
                       ? series[0].MainDicomTags.Modality
                       : "N/A";
+
+                  // Here we console log the StudyInstanceUID for each study
+                  // console.log(
+                  //   "StudyInstanceUID:",
+                  //   study.MainDicomTags.StudyInstanceUID
+                  // );
+
                   return {
                     ...study,
                     FirstSeriesModality: firstSeriesModality,
+                    StudyInstanceUID: study.MainDicomTags.StudyInstanceUID, // Ensure this line captures StudyInstanceUID
                   };
                 })
               );
@@ -830,18 +1234,6 @@ const OrthancServerData = () => {
               };
             })
           );
-          console.log("PATIENT DETAILS", patientsWithDetails);
-
-          let patientDetails = [];
-          patientsWithDetails.forEach((patient) => {
-            patient.Studies.forEach((study) => {
-              patientDetails.push(
-                `Patient Name: ${extractName(patient.PatientName)}, Modality: ${
-                  study.FirstSeriesModality
-                },ID:${patient.ID}`
-              );
-            });
-          });
 
           setPatientsData(patientsWithDetails);
 
@@ -875,100 +1267,6 @@ const OrthancServerData = () => {
     }
   }, [patientsData]);
 
-  // useEffect(() => {
-  //   if (patientsData.length === 0) {
-  //     const fetchSeriesForStudy = async (studyID) => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/studies/${studyID}/series`
-  //         );
-  //         return response.data;
-  //       } catch (error) {
-  //         console.error(`Error fetching series for study ${studyID}:`, error);
-  //         return [];
-  //       }
-  //     };
-
-  //     const fetchPatientsData = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/patients`
-  //         );
-  //         const patientIDs = response.data;
-  //         const patientsWithDetails = await Promise.all(
-  //           patientIDs.map(async (patientID, index) => {
-  //             const patientDataResponse = await axios.get(
-  //               `${orthancServerURL}/orthanc/patients/${patientID}`
-  //             );
-  //             const studies = await fetchStudiesForPatient(patientID);
-  //             const studiesWithDetails = await Promise.all(
-  //               studies.map(async (study) => {
-  //                 const series = await fetchSeriesForStudy(study.ID); // Fetch series for the current study
-  //                 const seriesWithModality = series.map((serie) => ({
-  //                   ...serie,
-  //                   Modality: serie.MainDicomTags.Modality,
-  //                 }));
-  //                 return {
-  //                   ...study,
-  //                   Series: seriesWithModality,
-  //                 };
-  //               })
-  //             );
-  //             const studiesWithType = studiesWithDetails.map((study) => ({
-  //               ...study,
-  //               type: study.MainDicomTags.StudyDescription,
-  //             }));
-  //             return {
-  //               ...patientDataResponse.data,
-  //               Studies: studiesWithType,
-  //               originalIndex: index,
-  //             };
-  //           })
-  //         );
-  //         console.log("PATIENT DETAILS", patientsWithDetails);
-
-  //         patientsWithDetails.forEach((patient) => {
-  //           patient.Studies.forEach((study) => {
-  //             study.Series.forEach((serie) => {
-  //               console.log(
-  //                 `Patient Name: ${patient.PatientName}, Modality: ${serie.Modality}`
-  //               );
-  //             });
-  //           });
-  //         });
-
-  //         setPatientsData(patientsWithDetails);
-
-  //         setLoading(false);
-  //         localStorage.setItem(
-  //           "patientsData",
-  //           JSON.stringify(patientsWithDetails)
-  //         );
-  //         setUploadSpinner(true); // Start showing the spinner
-  //       } catch (error) {
-  //         console.error("Error fetching patient data:", error);
-  //         setError(error);
-  //       }
-  //     };
-
-  //     const fetchStudiesForPatient = async (patientID) => {
-  //       try {
-  //         const response = await axios.get(
-  //           `${orthancServerURL}/orthanc/patients/${patientID}/studies`
-  //         );
-  //         return response.data;
-  //       } catch (error) {
-  //         console.error("Error fetching studies for patient:", error);
-  //         return [];
-  //       }
-  //     };
-
-  //     fetchPatientsData();
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [patientsData]);
-
   // CODE FOR UPLOADING ENTIRE PATIENT'S STUDIES ON PAGE LOAD
 
   // Function to upload studies for patients with empty FolderPath
@@ -995,40 +1293,14 @@ const OrthancServerData = () => {
         patient.MainDicomTags.PatientSex,
         study.MainDicomTags.ReferringPhysicianName,
         patient,
-        study.FirstSeriesModality
+        study.FirstSeriesModality,
+        study.StudyInstanceUID
       );
     }
 
     // Call the function recursively with the remaining patients
     uploadStudiesForPatientsWithEmptyFolderPath(remainingPatients);
   };
-
-  // useEffect(() => {
-  //   const delay = 9000; // 4 seconds in milliseconds
-  //   const timerId = setTimeout(() => {
-  //     const patientsToUpload = patientsData.filter((patient) => {
-  //       const patientKey = `Patient-${patient.MainDicomTags.PatientName}`;
-  //       const folderPath = firebasePatientData[patientKey]?.FolderPath;
-  //       return !folderPath || folderPath.trim() === "";
-  //     });
-
-  //     const totalPatients = patientsToUpload.length;
-  //     const uploadedPatients = patientsData.length - totalPatients;
-
-  //     const confirmed = window.confirm(`
-  //     Are you sure you want to upload the following patient studies?
-  //     Total Patients to Upload: ${totalPatients}
-  //     Patients Already Uploaded: ${uploadedPatients}
-  //   `);
-
-  //     if (confirmed) {
-  //       uploadStudiesForPatientsWithEmptyFolderPath(patientsToUpload);
-  //     }
-  //     setUploadSpinner(false);
-  //   }, delay);
-
-  //   return () => clearTimeout(timerId);
-  // }, [patientsData]);
 
   useEffect(() => {
     const delay = 9000; // 9 seconds in milliseconds
@@ -1257,7 +1529,7 @@ const OrthancServerData = () => {
                             onClick={() =>
                               handleUploadConfirmation(
                                 study.ID,
-                                extractName(patient.MainDicomTags.PatientName), // Corrected here
+                                extractName(patient.MainDicomTags.PatientName),
                                 study.type,
                                 study.MainDicomTags.StudyDate,
                                 patient.MainDicomTags.PatientID,
@@ -1265,7 +1537,8 @@ const OrthancServerData = () => {
                                 patient.MainDicomTags.PatientSex,
                                 study.MainDicomTags.ReferringPhysicianName,
                                 patient,
-                                study.FirstSeriesModality
+                                study.FirstSeriesModality,
+                                study.StudyInstanceUID
                               )
                             }
                           >

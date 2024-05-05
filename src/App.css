@@ -1,44 +1,40 @@
 body {
-    background-image: url("../public/img1.jpg") ;
-    background-size: fill;
-    background-repeat: no-repeat;
-    margin: 0;
-    padding: 0;
+  background-image: url("../public/img1.jpg");
+  background-size: fill;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
 }
 
-
-
 @media screen and (max-width: 990px) {
-    body {
-        background-size: cover;
-        height: 95vh;
-    }
+  body {
+    background-size: cover;
+    height: 95vh;
+  }
 }
 
 @media screen and (max-width: 640px) {
-body {
+  body {
     background-size: 160%;
     /* height: 95vh ; */
-}
+  }
 }
 
 @media screen and (max-width: 550px) {
-    body {
-        background-size: 260%;
-        /* height: 95vh ; */
-    }
-    }
+  body {
+    background-size: 260%;
+    /* height: 95vh ; */
+  }
+}
 
-    @media screen and (max-width: 450px) {
-        body {
-            background-size: 490%;
-            /* height: 95vh ; */
-        }
-        }
+@media screen and (max-width: 450px) {
+  body {
+    background-size: 490%;
+    /* height: 95vh ; */
+  }
+}
 
-
-
-        /* body {
+/* body {
             margin: 0;
             padding: 0;
             position: relative;
@@ -70,4 +66,3 @@ body {
               transform: scale(1);
             }
           } */
-          

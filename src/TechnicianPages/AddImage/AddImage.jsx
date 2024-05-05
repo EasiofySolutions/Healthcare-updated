@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRef } from "react";
 import { db } from "../../firebase-config";
 import { storage } from "../../firebase-config";
 import {
@@ -46,9 +47,15 @@ function AddImage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [selectedFileType, setSelectedFileType] = useState("");
+
   const navigate = useNavigate();
 
   const location = useLocation();
+
+  const fileInputRef = useRef(null);
   const page = new URLSearchParams(location.search).get("page");
 
   const ctTypes = [
@@ -551,8 +558,8 @@ function AddImage() {
         body: formData,
       });
 
-      clearInterval(progressInterval); // Stop the progress simulation
-      setUploadProgress(100); // Set progress to 100% on upload completion
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
       if (!response.ok) {
         throw new Error("Failed to upload files");
@@ -563,6 +570,16 @@ function AddImage() {
       toast.success(result.message || "Your file is ready!", {
         position: "top-center",
       });
+      if (selectedFileType === "MRI") {
+        await MRIuploadCount();
+      } else if (selectedFileType === "CT") {
+        await CTupload();
+      } else if (selectedFileType === "CR") {
+        await Xrayupload();
+      }
+      await update(ref(db, `superadmin/admins/${adminName1}/patients/${id}`), {
+        Modality: selectedFileType,
+      });
     } catch (error) {
       toast.error(error.message || "An error occurred during the upload.", {
         position: "top-center",
@@ -572,6 +589,54 @@ function AddImage() {
     }
     await incrementTotalUploads();
     await uploadEvents();
+  };
+
+  const MRIuploadCount = async () => {
+    const totalUploadsRef = ref(
+      db,
+      `superadmin/admins/${adminName1}/costing/MriUploads`
+    );
+    try {
+      const snapshot = await get(totalUploadsRef);
+
+      const currentUploads = Number(snapshot.val()) || 0;
+      await set(totalUploadsRef, currentUploads + 1);
+      console.log("Total uploads incremented successfully.");
+    } catch (error) {
+      console.error("Failed to increment total uploads:", error);
+    }
+  };
+
+  const CTupload = async () => {
+    const totalUploadsRef = ref(
+      db,
+      `superadmin/admins/${adminName1}/costing/CTUploads`
+    );
+    try {
+      const snapshot = await get(totalUploadsRef);
+      // Convert the value to a number before incrementing
+      const currentUploads = Number(snapshot.val()) || 0;
+      await set(totalUploadsRef, currentUploads + 1);
+      console.log("Total uploads incremented successfully.");
+    } catch (error) {
+      console.error("Failed to increment total uploads:", error);
+    }
+  };
+
+  const Xrayupload = async () => {
+    const totalUploadsRef = ref(
+      db,
+      `superadmin/admins/${adminName1}/costing/XrayUploads`
+    );
+    try {
+      const snapshot = await get(totalUploadsRef);
+      // Convert the value to a number before incrementing
+      const currentUploads = Number(snapshot.val()) || 0;
+      await set(totalUploadsRef, currentUploads + 1);
+      console.log("Total uploads incremented successfully.");
+    } catch (error) {
+      console.error("Failed to increment total uploads:", error);
+    }
   };
 
   const incrementTotalUploads = async () => {
@@ -718,6 +783,32 @@ function AddImage() {
         // }, 2100);
       }
     );
+  };
+  const handleFileSelect = (event) => {
+    if (!selectedFileType) {
+      setModalVisible(true);
+      event.preventDefault(); // Stop the file dialog from opening
+    } else {
+      // If selectedFileType is already set, proceed to open the file dialog.
+      fileInputRef.current?.click();
+    }
+  };
+
+  // Using useEffect to open the file dialog when selectedFileType changes
+  useEffect(() => {
+    if (selectedFileType) {
+      fileInputRef.current?.click();
+    }
+  }, [selectedFileType]);
+
+  const handleTypeSelect = (type) => {
+    setSelectedFileType(type);
+    setModalVisible(false);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedFileType(null); // Reset selectedFileType when closing the modal
+    setModalVisible(false);
   };
 
   return (
@@ -1001,6 +1092,24 @@ function AddImage() {
               </button>
             </>
           )}
+          {/* <input
+            type="file"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            multiple
+            webkitdirectory="true"
+          /> */}
+          {modalVisible && (
+            <div className="type-selection-modal">
+              <h2>Select Type Of File</h2>
+              <button onClick={() => handleTypeSelect("CT")}>CT</button>
+              <button onClick={() => handleTypeSelect("MRI")}>MRI</button>
+              <button onClick={() => handleTypeSelect("CR")}>CR</button>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                Close
+              </button>
+            </div>
+          )}
 
           {FolderPath === "" ? (
             <>
@@ -1015,6 +1124,8 @@ function AddImage() {
                 // accept=".zip"
                 required
                 onChange={fileValidation1}
+                onClick={handleFileSelect}
+                ref={fileInputRef}
               />
               <button
                 type="submit"
@@ -1035,6 +1146,7 @@ function AddImage() {
                 id="files11"
                 name="files[]"
                 placeholder="Dicom Folder"
+                readOnly
                 // value={FolderPath || ""}
               />
               <input
@@ -1047,6 +1159,8 @@ function AddImage() {
                 // accept=".zip"
                 required
                 onChange={fileValidation1}
+                onClick={handleFileSelect}
+                ref={fileInputRef}
               />
               <button
                 type="submit"
