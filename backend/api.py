@@ -70,7 +70,6 @@ def secure_path(path):
 
 progress_lock = Lock()
 progress = {}
-
 @app.route('/uploadortho', methods=['POST'])
 def upload_files_ortho():
     results = []
@@ -89,13 +88,15 @@ def upload_files_ortho():
             file_stream = BytesIO(file.read())
             ds = dcmread(file_stream)
 
+            ds = mask_dicom(ds)
+
             memory_file = BytesIO()
             ds.save_as(memory_file, write_like_original=False)
             memory_file.seek(0)
 
             # Extract and sanitize the series folder path
             webkit_path = file.filename
-            safe_path = secure_filename(webkit_path)
+            safe_path = secure_path(webkit_path)
             immediate_directory = os.path.dirname(webkit_path)
             safe_immediate_directory = secure_filename(immediate_directory) if immediate_directory else ""
             firebase_path = f"{rootFolderPathortho}{safe_immediate_directory}/{os.path.basename(safe_path)}"
