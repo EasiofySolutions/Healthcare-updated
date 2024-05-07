@@ -31,8 +31,6 @@ const extractName = (fullString) => {
 const OrthancServerData = () => {
   const [patientsData, setPatientsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [totalInstances, setTotalInstances] = useState(0);
-  const [remainingCount, setRemainingCount] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [uploadMessage, setUploadMessage] = useState();
   const [loadingDots, setLoadingDots] = useState("");
@@ -233,127 +231,6 @@ const OrthancServerData = () => {
     modality,
     StudyInstaceUID
   ) => {
-    // const sanitizedPatientName = extractName(patientName);
-    // const patientKey = `Patient-${sanitizeFirebaseKey(sanitizedPatientName)}`;
-    // setProgress({ total: 1, completed: 0 });
-    // listenToProgress(patientKey);
-    // const Gender = PatientSex;
-    // var DateOfStudy = StudyDate;
-    // DateOfStudy = format(
-    //   parse(StudyDate, "yyyyMMdd", new Date()),
-    //   "dd/MM/yyyy"
-    // );
-
-    // const genderLabel =
-    //   Gender === "M" ? "Male" : Gender === "F" ? "Female" : "Unknown";
-    // const birthDate = PatientBirthDate;
-    // const age = new Date().getFullYear() - parseInt(birthDate.slice(0, 4), 10);
-    // const studyFolderPath = `superadmin/admins/${adminName1}/patients/${patientKey}/folder_${Date.now()}/`;
-
-    // const DoctorName = ReferringPhysicianName;
-    // const currentTimestamp = new Date().toLocaleString("en-GB"); // Format the timestamp as "dd/mm/yyyy hh:mm:ss"
-
-    // // Open the modal only when files are ready to be uploaded
-    // setUploadMessage("Please wait, getting files ready");
-    // setModalIsOpen(true);
-
-    // const patientSnapshot = await get(
-    //   rtdbRef(db, `superadmin/admins/${adminName1}/patients/${patientKey}`)
-    // );
-    // const patientExists = patientSnapshot.exists();
-
-    // let uploadSuccessful = true;
-    // let seriesInstanceUid = [];
-    // let seriesDescription = [];
-    // let seriesDescriptionMap = new Map(); // Map to hold series descriptions and their UIDs
-
-    // try {
-    //   const seriesListResponse = await axios.get(
-    //     `${orthancServerURL}/orthanc/studies/${studyInstanceUID}`
-    //   );
-    //   const instancesToUpload = []; // Initialize the array to collect instances
-
-    //   for (const series of seriesListResponse.data.Series) {
-    //     const seriesInstanceUidres = await axios.get(
-    //       `${orthancServerURL}/orthanc/series/${series}`
-    //     );
-
-    //     const seriesInstanceUID =
-    //       seriesInstanceUidres.data.MainDicomTags.SeriesInstanceUID;
-
-    //     seriesInstanceUid.push(seriesInstanceUID);
-    //     const seriesDesc =
-    //       seriesInstanceUidres.data.MainDicomTags.SeriesDescription;
-    //     seriesDescription.push(seriesDesc);
-    //     seriesDescriptionMap.set(seriesDesc, series); // Map series description to its UID
-
-    //     const seriesInstanceListResponse = await axios.get(
-    //       `${orthancServerURL}/orthanc/series/${series}/instances`
-    //     );
-    //     instancesToUpload.push(
-    //       ...seriesInstanceListResponse.data.map((instance) => ({
-    //         ...instance,
-    //         seriesDescription: seriesDesc, // Store series description with the instance
-    //       }))
-    //     );
-    //   }
-
-    //   const totalInstances = instancesToUpload.length;
-    //   let uploadedCount = 0;
-
-    //   setTotalInstances(totalInstances);
-
-    //   const formData = new FormData();
-    //   formData.append("adminName1", adminName1);
-    //   formData.append("patientId", patientKey);
-    //   formData.append("timestamp", Date.now());
-    //   formData.append("folderpath", studyFolderPath);
-    //   formData.append("SeriesName", seriesDescription);
-
-    //   const uploadPromises = instancesToUpload.map(async (instance, index) => {
-    //     try {
-    //       uploadedCount++;
-    //       const remainingCount = totalInstances - uploadedCount;
-
-    //       setRemainingCount(remainingCount);
-
-    //       const instanceResponse = await axios.get(
-    //         `${orthancServerURL}/orthanc/instances/${instance.ID}/file`,
-    //         { responseType: "blob" }
-    //       );
-    //       formData.append(
-    //         "files",
-    //         new Blob([instanceResponse.data]),
-    //         `${instance.seriesDescription}/${instance.ID}.dcm`
-    //       );
-    //     } catch (error) {
-    //       console.error("Error uploading instance:", error);
-    //       uploadSuccessful = false;
-    //     }
-    //   });
-
-    //   await Promise.all(uploadPromises);
-
-    //   const uploadResponse = await axios.post(
-    //     "http://127.0.0.1:5000/uploadortho",
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-
-    //   if (uploadResponse.data.message) {
-    //     console.log(uploadResponse.data.message);
-    //   } else if (uploadResponse.data.error) {
-    //     console.error(uploadResponse.data.error);
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching study data:", error);
-    //   toast.error("Data Uploading Failed...", { position: "top-center" });
-    //   uploadSuccessful = false;
-    // }
     const sanitizedPatientName = extractName(patientName);
     const patientKey = `Patient-${sanitizeFirebaseKey(sanitizedPatientName)}`;
 
